@@ -1,0 +1,28 @@
+<div class="container-fluid">
+  <div class="row-fluid">
+    <div class="span8">
+
+      <div class="jumbotron">
+        <h1>Simmer</h1>
+        <form class="bs-example form-horizontal" ng-submit="setDirectory()">
+          <fieldset>
+            <div class="form-group">
+              <label for="inputEmail" class="col-lg-1 control-label">Directory</label>
+              <div class="col-lg-8">
+                <input type="text" ng-model="directory" class="form-control" placeholder="Directory to scan">
+              </div>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+
+      <ul class="photos">
+        <li ng-repeat="photo in photos">
+          <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="{{photo.name}}"></a>
+          <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</div>
