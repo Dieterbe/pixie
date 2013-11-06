@@ -20,9 +20,16 @@
         <keybinding on="k" invoke="moveUp()" />
 
       <div class="photos">
-        <div class="well" ng-repeat="photo in photos" ng-class="{'active': photo.id == focusIndex}">
-		<a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
-	  <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
+	      <div ng-repeat="photo in photos">
+            <div class="panel" ng-class="{'panel-success': photo.id == focusIndex, 'panel-info': photo.id != focusIndex}">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{photo.name}}</h3>
+                </div>
+                <div class="panel-body">
+                    <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
+                    <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
+                </div>
+            </div>
         </div>
       </div>
 
