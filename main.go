@@ -16,13 +16,14 @@ import (
 var thumbnail_dir = config.String("thumbnail_dir", "")
 
 type Photo struct {
+	Id    int    `json:"id"`
 	Name  string `json:"name"`
 	Dir   string `json:"dir"`
 	Thumb string `json:"thumb"`
 }
 
 func (p *Photo) String() string {
-	return fmt.Sprintf("Photo {Name: '%s', Dir: '%s', Thumb: '%s'}", p.Name, p.Dir, p.Thumb)
+	return fmt.Sprintf("Photo {Id: %d, Name: '%s', Dir: '%s', Thumb: '%s'}", p.Id, p.Name, p.Dir, p.Thumb)
 }
 
 func api_handler(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +41,7 @@ func api_handler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Cannot figure out directory abspath: '%s': %s", dir, err), 503)
 	}
+	id := 0
 	for _, f := range list {
 		name := f.Name()
 		ext := filepath.Ext(name)
@@ -48,7 +50,8 @@ func api_handler(w http.ResponseWriter, r *http.Request) {
 			h := md5.New()
 			io.WriteString(h, fmt.Sprintf("file://%s/%s", dir, name))
 			thumb := fmt.Sprintf("%x.png", h.Sum(nil))
-			p := Photo{name, dir, thumb}
+			p := Photo{id, name, dir, thumb}
+			id++
 			photos = append(photos, p)
 		}
 	}

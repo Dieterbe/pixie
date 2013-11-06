@@ -15,12 +15,14 @@
           </fieldset>
         </form>
       </div>
-        <keybinding on="g i" invoke="gotoInbox()" />
+        <keybinding on="o" invoke="openRecord()" />
+        <keybinding on="j" invoke="moveDown()" />
+        <keybinding on="k" invoke="moveUp()" />
 
       <div class="photos">
-        <div class="well" ng-repeat="photo in photos">
+        <div class="well" ng-repeat="photo in photos" ng-class="{'active': photo.id == focusIndex}">
 		<a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
-          <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
+	  <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
         </div>
       </div>
 
