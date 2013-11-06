@@ -16,12 +16,12 @@
         </form>
       </div>
 
-      <ul class="photos">
-        <li ng-repeat="photo in photos">
-          <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="{{photo.name}}"></a>
+      <div class="photos">
+        <div class="well" ng-repeat="photo in photos">
+		<a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
           <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
-        </li>
-      </ul>
+        </div>
+      </div>
 
     </div>
   </div>
