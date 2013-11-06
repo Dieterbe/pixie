@@ -9,4 +9,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos',
     $scope.setDirectory = function() {
       $scope.photos = Photos.get({directory: $scope.directory});
     }
+    $scope.gotoInbox = function () {
+        alert('Goto Inbox');
+    };
   }]);

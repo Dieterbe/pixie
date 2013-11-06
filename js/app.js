@@ -6,7 +6,8 @@ var photosApp = angular.module('photosApp', [
   'ngRoute',
   'photosControllers',
   'photosFilters',
-  'photosServices'
+  'photosServices',
+  'directives'
 ]);
 
 photosApp.config(['$routeProvider',
