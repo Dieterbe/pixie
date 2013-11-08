@@ -11,18 +11,24 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos',
     }
     $scope.focusIndex = 0;
     $scope.openRecord = function () {
+	    $scope.$apply(function () {
         console.log('opening : ', $scope.photos[$scope.focusIndex] );
+	    });
     };
     $scope.moveDown = function () {
-        if ($scope.focusIndex < $scope.photos.length -1) {
-            $scope.focusIndex++;
-            console.log($scope.focusIndex);
-        }
+	    $scope.$apply(function () {
+            if ($scope.focusIndex < $scope.photos.length -1) {
+                $scope.focusIndex++;
+                window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+            }
+	    });
     }
     $scope.moveUp = function () {
-        if($scope.focusIndex > 0 ) {
-            $scope.focusIndex--;
-            console.log($scope.focusIndex);
-        }
+	    $scope.$apply(function () {
+            if($scope.focusIndex > 0 ) {
+                $scope.focusIndex--;
+                window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+            }
+	    });
     }
   }]);
