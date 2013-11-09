@@ -14,6 +14,12 @@
             </div>
           </fieldset>
         </form>
+        <!-- TODO make this if work -->
+        <!-- <dif ng-if="{error != ''}"> -->
+            <div class="alert alert-dismissable alert-danger">
+                {{error.data}}
+            </div>
+        <!-- </div> -->
       </div>
         <keybinding on="o" invoke="openRecord()" />
         <keybinding on="j" invoke="moveDown()" />
@@ -26,8 +32,18 @@
                       <h3 class="panel-title">{{photo.name}}</h3>
                   </div>
                   <div class="panel-body">
-                      <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
-                      <a href="#/photos/{{photo.name}}">{{photo.name}}</a>
+                      <table>
+                          <tr>
+                              <td>
+                                  <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
+                             </td>
+                             <td>
+                                 <ul>
+                                     <li style="display: block;" ng-repeat="tag in photo.tags" class="label label-info">{{tag}}</li>
+                                 </ul>
+                             </td>
+                         </tr>
+                     </table>
                   </div>
             </div>
         </div>
