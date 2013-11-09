@@ -9,6 +9,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos',
     $scope.setDirectory = function() {
         $scope.photos = Photos.get({directory: $scope.directory});
     }
+    // routeParams.dir
     $scope.focusIndex = 0;
     $scope.openRecord = function () {
 	    $scope.$apply(function () {
