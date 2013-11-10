@@ -11,6 +11,7 @@ photosServices.factory('Photos', ['$resource',
 photosServices.factory('Photo', ['$resource',
   function($resource){
     return $resource('/api/photo', {}, {
-        tag: { method:'POST', params:{fname:"@fname", tag:"@tag"}, isArray:true}}
-    );
+        tag: { method:'POST', params:{fname:"@fname", tag:"@tag"}, isArray: false},
+        untag: { method:'POST', params:{fname:"@fname", untag:"@tag"}, isArray: false}
+    });
   }]);

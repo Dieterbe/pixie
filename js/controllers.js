@@ -42,14 +42,26 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             var fname = $scope.directory + "/" + $scope.photos[$scope.focusIndex].name;
             var index = $scope.focusIndex; // not sure if needed, but by the time the callback fires we may have focused on other image
             Photo.tag({fname: fname, tag: tag}, function(response) {
-                $scope.logs.push({msg: response.msg, type: 'info'});
+                $scope.logs.push({msg: response.msg + ": " + fname + " (" + tag + ")", type: 'info'});
                 if(response.msg != "tag already existed") {
                     $scope.photos[index]['tags'].push(tag);
                 }
             }, function(response) {
-                alert("tagging failed:" + response);
                 console.debug(response);
-                $scope.logs.push({'msg': response, type: 'error'});
+                $scope.logs.push({'msg': response.msg + ": "  + fname + " (" + tag + ")", type: 'error'});
+            });
+	    });
+    }
+    $scope.unTag = function (tag) {
+	    $scope.$apply(function () {
+            var fname = $scope.directory + "/" + $scope.photos[$scope.focusIndex].name;
+            var index = $scope.focusIndex; // not sure if needed, but by the time the callback fires we may have focused on other image
+            Photo.untag({fname: fname, tag: tag}, function(response) {
+                $scope.logs.push({msg: response.msg + ": " + fname + " (" + tag + ")", type: 'info'});
+                // todo$scope.photos[index]['tags'].push(tag);
+            }, function(response) {
+                console.debug(response);
+                $scope.logs.push({'msg': response.msg + ": " + fname + " (" + tag + ")", type: 'error'});
             });
 	    });
     }

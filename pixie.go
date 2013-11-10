@@ -53,33 +53,11 @@ func api_photo_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.
 		http.Error(w, fmt.Sprintf("Invalid request: %s", err), 503)
 		return
 	}
-    if tag != "" {
-        Tag(w, r, conn_sqlite, fname, tag)
-    } else {
-        Untag(w, r, conn_sqlite, fname, tag)
-    }
-}
-
-type Resp struct {
-	Msg string `json:"msg"`
-}
-
-func Json(w http.ResponseWriter, resp Resp) {
-	enc := json.NewEncoder(w)
-	err := enc.Encode(resp)
-	if err != nil {
-		fmt.Printf("WARNING: failed to encode/write json: %s\n", err)
+	if tag != "" {
+		Tag(w, r, conn_sqlite, fname, tag)
+	} else {
+		UnTag(w, r, conn_sqlite, fname, tag)
 	}
-	return
-}
-func ErrorJson(w http.ResponseWriter, resp Resp, code int) {
-	enc := json.NewEncoder(w)
-	err := enc.Encode(resp)
-	if err != nil {
-		fmt.Printf("WARNING: failed to encode/write json: %s\n", err)
-	}
-	http.Error(w, "", 503)
-
 }
 
 // get a list of photos (with tags) for a given dir
