@@ -14,16 +14,20 @@
             </div>
           </fieldset>
         </form>
-        <!-- TODO make this if work -->
-        <!-- <dif ng-if="{error != ''}"> -->
-            <div class="alert alert-dismissable alert-danger">
-                {{error.data}}
-            </div>
-        <!-- </div> -->
+      </div>
+      <div>
+        <ul>
+           <li ng-repeat="log in logs" ng-class="{'text-danger': log.type == 'error', 'text-primary': log.type == 'info'}">
+            {{log.msg}}
+            </li>
+        </ul>
       </div>
         <keybinding on="o" invoke="openRecord()" />
         <keybinding on="j" invoke="moveDown()" />
         <keybinding on="k" invoke="moveUp()" />
+        <keybinding on="a" invoke="tag('album-fb')" />
+        <keybinding on="t" invoke="tag('test')" />
+        <keybinding on="T" invoke="autotag('test')" />
 
       <div class="photos">
           <div ng-repeat="photo in photos">
