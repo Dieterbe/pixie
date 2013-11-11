@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"database/sql"
@@ -23,12 +23,11 @@ func Json(w http.ResponseWriter, resp Resp) {
 	return
 }
 func ErrorJson(w http.ResponseWriter, resp Resp, code int) {
-	enc := json.NewEncoder(w)
-	err := enc.Encode(resp)
+	j, err := json.Marshal(resp)
 	if err != nil {
-		fmt.Printf("WARNING: failed to encode/write json: %s\n", err)
+		fmt.Printf("WARNING: failed to encode json: %s\n", err)
 	}
-	http.Error(w, "", code)
+	http.Error(w, string(j), code)
 
 }
 
@@ -74,7 +73,7 @@ func get_tagid(conn_sqlite *sql.DB, tag string) (tag_id int, err error) {
 	case err != nil:
 		return -1, errors.New(fmt.Sprintf("Cannot query sqlite: for tag '%s': %s", tag, err))
 	default:
-		fmt.Println("")
+		fmt.Println("read tag ", tag, "id", tag_id)
 	}
 	if tag_id == -1 {
 		query = `INSERT INTO tag (name) VALUES (?)`
@@ -110,7 +109,7 @@ func Tag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname stri
 	case err == sql.ErrNoRows:
 		file_tag_id = -1
 	case err != nil:
-		ErrorJson(w, Resp{fmt.Sprintf("Cannot query sqlite for file '%s' and tag '%s': %s", fname, tag, err)}, 503)
+		ErrorJson(w, Resp{fmt.Sprintf("Cannot query for any pre-existing mapping: %s", err)}, 503)
 		return
 	default:
 		Json(w, Resp{"tag already existed"})
@@ -119,7 +118,7 @@ func Tag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname stri
 	query = `insert into file_tag (file_id, tag_id) values (?, ?)`
 	_, err = conn_sqlite.Exec(query, file_id, tag_id)
 	if err != nil {
-		ErrorJson(w, Resp{fmt.Sprintf("Cannot insert file '%s' - tag mapping tag '%s' into sqlite: %s", fname, tag, err)}, 503)
+		ErrorJson(w, Resp{fmt.Sprintf("Cannot create tag mapping: %s", err)}, 503)
 		return
 	}
 	Json(w, Resp{"tag saved"})
@@ -136,12 +135,23 @@ func UnTag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname st
 		ErrorJson(w, Resp{err.Error()}, 503)
 		return
 	}
+    fmt.Println("ids tag en file", tag_id, file_id)
 	query := `DELETE FROM file_tag where file_id = ? and tag_id = ?`
-	_, err = conn_sqlite.Exec(query, file_id, tag_id)
+    result, err := conn_sqlite.Exec(query, file_id, tag_id)
 	if err != nil {
-		ErrorJson(w, Resp{fmt.Sprintf("Cannot remove tag '%s' for file '%s' in sqlite: %s", tag, fname, err)}, 503)
+		ErrorJson(w, Resp{fmt.Sprintf("tag remove failed: %s", err)}, 503)
 		return
 	}
+    ra, err := result.RowsAffected()
+	if err != nil {
+        ErrorJson(w, Resp{fmt.Sprintf("Cannot check if tag remove worked: %s", err)}, 503)
+		return
+	}
+    if ra == 0 {
+		ErrorJson(w, Resp{"Binding non-existent. Nothing to remove"}, 503)
+		return
+    }
+
 	Json(w, Resp{"tag removed"})
 }
 
