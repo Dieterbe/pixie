@@ -1,6 +1,7 @@
 package main
 
 import (
+	"./backend"
 	"crypto/md5"
 	"database/sql"
 	"encoding/json"
@@ -35,28 +36,28 @@ func (p *Photo) String() string {
 func api_photo_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB) {
 	err := r.ParseForm()
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Invalid request: %s", err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
 	}
 	tag := r.Form.Get("tag")
 	untag := r.Form.Get("untag")
 	fname := r.Form.Get("fname")
 	if fname == "" {
-		http.Error(w, fmt.Sprintf("Invalid request: %s", err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
 	}
 	if tag == "" && untag == "" {
-		http.Error(w, fmt.Sprintf("Invalid request: %s", err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
 	}
 	if tag != "" && untag != "" {
-		http.Error(w, fmt.Sprintf("Invalid request: %s", err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
 	}
 	if tag != "" {
-		Tag(w, r, conn_sqlite, fname, tag)
+		backend.Tag(w, r, conn_sqlite, fname, tag)
 	} else {
-		UnTag(w, r, conn_sqlite, fname, tag)
+		backend.UnTag(w, r, conn_sqlite, fname, untag)
 	}
 }
 
@@ -66,19 +67,19 @@ func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql
 	fmt.Printf("reading dir '%s'\n", dir)
 	list, err := ioutil.ReadDir(dir)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Cannot read directory: '%s': %s", dir, err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot read directory: '%s': %s", dir, err)}, 503)
 		return
 	}
 	photos := make([]Photo, 0, len(list))
 	dir, err = filepath.Abs(dir)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Cannot figure out directory abspath: '%s': %s", dir, err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot figure out directory abspath: '%s': %s", dir, err)}, 503)
 		return
 	}
 
-	filetags, err := GetFileTags(dir, conn_sqlite)
+	filetags, err := backend.GetFileTags(dir, conn_sqlite)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err), 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
 		return
 	}
 

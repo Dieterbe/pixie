@@ -135,45 +135,48 @@ func UnTag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname st
 		ErrorJson(w, Resp{err.Error()}, 503)
 		return
 	}
-    fmt.Println("ids tag en file", tag_id, file_id)
 	query := `DELETE FROM file_tag where file_id = ? and tag_id = ?`
-    result, err := conn_sqlite.Exec(query, file_id, tag_id)
+	result, err := conn_sqlite.Exec(query, file_id, tag_id)
 	if err != nil {
 		ErrorJson(w, Resp{fmt.Sprintf("tag remove failed: %s", err)}, 503)
 		return
 	}
-    ra, err := result.RowsAffected()
+	ra, err := result.RowsAffected()
 	if err != nil {
-        ErrorJson(w, Resp{fmt.Sprintf("Cannot check if tag remove worked: %s", err)}, 503)
+		ErrorJson(w, Resp{fmt.Sprintf("Cannot check if tag remove worked: %s", err)}, 503)
 		return
 	}
-    if ra == 0 {
+	if ra == 0 {
 		ErrorJson(w, Resp{"Binding non-existent. Nothing to remove"}, 503)
 		return
-    }
+	}
 
 	Json(w, Resp{"tag removed"})
 }
 
 func GetFileTags(dir string, conn_sqlite *sql.DB) (map[string]string, error) {
-	sql := `select f.name, group_concat(t.name) from file as f
+	query := `select f.name, group_concat(t.name) from file as f
     left join file_tag as ft on f.id == ft.file_id
     left join tag as t on t.id == ft.tag_id
     where directory = ?
     group by f.id`
-	rows, err := conn_sqlite.Query(sql, dir)
+	rows, err := conn_sqlite.Query(query, dir)
 	if err != nil {
 		return nil, err
 	}
 	filetags := make(map[string]string)
 	for rows.Next() {
-		var fname string
-		var tags string
+		//var fname string
+		//var tags string
+		// even though both values are TEXT NOT NULL, we need this, or the driver
+		// errors about unsupported time. dunno why?
+		var fname sql.NullString
+		var tags sql.NullString
 		err := rows.Scan(&fname, &tags)
 		if err != nil {
 			return nil, err
 		}
-		filetags[fname] = tags
+		filetags[fname.String] = tags.String
 	}
 	return filetags, nil
 }

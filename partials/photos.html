@@ -17,8 +17,10 @@
       </div>
       <div>
         <ul>
-           <li ng-repeat="log in logs" ng-class="{'text-danger': log.type == 'error', 'text-primary': log.type == 'info'}">
-            {{log.msg}}
+            <li ng-repeat="log in logs">
+               <span ng-class="{'text-danger': log.type == 'error', 'text-info': log.type == 'info'}">
+                    {{log.msg}}
+               </span>
             </li>
         </ul>
       </div>
@@ -27,7 +29,7 @@
         <keybinding on="k" invoke="moveUp()" />
         <keybinding on="a" invoke="tag('album-fb')" />
         <keybinding on="t" invoke="tag('test')" />
-        <keybinding on="dt" invoke="unTag('test')" />
+        <keybinding on="d t" invoke="unTag('test')" />
         <keybinding on="T" invoke="autotag('test')" />
 
       <div class="photos">
