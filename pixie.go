@@ -128,5 +128,5 @@ func main() {
 	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails/", http.FileServer(http.Dir(*thumbnail_dir))))
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	fmt.Printf("starting up on %s\n", addr)
-	http.ListenAndServe(addr, nil)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }
