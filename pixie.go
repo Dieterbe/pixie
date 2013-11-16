@@ -142,7 +142,7 @@ func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql
 		mime := mime.TypeByExtension(ext)
 		if strings.HasPrefix(mime, "image/") {
 			h := md5.New()
-			io.WriteString(h, fmt.Sprintf("file://%s/%s", dir, name))
+			io.WriteString(h, fmt.Sprintf("file://%s", path.Join(dir, name)))
 			thumb := fmt.Sprintf("%x.png", h.Sum(nil))
 			var tags_slice []string
 			tags_str, ok := filetags[name]
