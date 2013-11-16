@@ -70,3 +70,6 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     }
     // todo $scope.autotag = function (tag) {
   }]);
+photosControllers.controller('PhotoDetailCtrl', ['$scope', '$routeParams', 'Photos', 'Photo',
+  function($scope, $routeParams, Photos, Photo) {
+  }]);

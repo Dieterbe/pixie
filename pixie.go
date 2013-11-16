@@ -13,6 +13,8 @@ import (
 	"log"
 	"mime"
 	"net/http"
+	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -21,15 +23,47 @@ var thumbnail_dir = config.String("thumbnail_dir", "")
 var tmsu_file = config.String("tmsu_file", "")
 
 type Photo struct {
-	Id    int      `json:"id"`
-	Name  string   `json:"name"`
-	Dir   string   `json:"dir"`
-	Thumb string   `json:"thumb"`
-	Tags  []string `json:"tags"`
+	Id    int               `json:"id"`
+	Name  string            `json:"name"`
+	Ext   string            `json:"-"`
+	Dir   string            `json:"dir"`
+	Thumb string            `json:"thumb"`
+	Tags  []string          `json:"tags"`
+	Edits map[string]string `json:"edits"`
 }
 
 func (p *Photo) String() string {
 	return fmt.Sprintf("Photo {Id: %d, Name: '%s', Dir: '%s', Thumb: '%s'}", p.Id, p.Name, p.Dir, p.Thumb)
+}
+
+func (p *Photo) LoadEdits(edits_dir string) error {
+	// /bleh/originals/foo/bar.jpg ->
+	// /bleh/edits/foo/bar.jpg (standard edit)
+	// /bleh/edits/foo/bar-speficier.jpg (specified edit)
+	if edits_dir == "" {
+		return nil
+	}
+	basename := p.Name[:len(p.Name)-len(p.Ext)]
+	edit_base := path.Join(edits_dir, basename)
+	glob_pattern := fmt.Sprintf("%s*%s", edit_base, p.Ext)
+	fmt.Println("looking for edits ", glob_pattern)
+	out := make(map[string]string)
+	matches, err := filepath.Glob(glob_pattern)
+	if err != nil {
+		return err
+	}
+	for _, match_path := range matches {
+		key := strings.Replace(match_path, edit_base, "", 1)
+		key = strings.Replace(key, p.Ext, "", 1)
+		if key == "" {
+			key = "standard"
+		} else {
+			key = key[1:] // strip leading '_', '-', etc
+		}
+		out[key] = match_path
+	}
+	p.Edits = out
+	return nil
 }
 
 // [un]tag a given fname with a given tag
@@ -61,6 +95,19 @@ func api_photo_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.
 	}
 }
 
+func find_edits_dir(dir string) (string, error) {
+	edits_dir := strings.Replace(dir, "originals", "edits", 1)
+	edits_dir = strings.Replace(edits_dir, "originals-generated", "edits", 1)
+	_, err := os.Stat(edits_dir)
+	if err != nil {
+		return edits_dir, nil
+	}
+	if os.IsNotExist(err) {
+		return "", nil
+	}
+	return edits_dir, err
+}
+
 // get a list of photos (with tags) for a given dir
 func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB) {
 	dir := strings.Replace(r.URL.Path, "/api/photos", "", 1)
@@ -68,6 +115,11 @@ func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql
 	list, err := ioutil.ReadDir(dir)
 	if err != nil {
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot read directory: '%s': %s", dir, err)}, 503)
+		return
+	}
+	edits_dir, err := find_edits_dir(dir)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edits directory '%s' seems to exist but unable to read: %s", edits_dir, err)}, 503)
 		return
 	}
 	photos := make([]Photo, 0, len(list))
@@ -100,7 +152,11 @@ func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql
 			} else {
 				tags_slice = make([]string, 0, 0)
 			}
-			p := Photo{id, name, dir, thumb, tags_slice}
+			p := Photo{id, name, ext, dir, thumb, tags_slice, nil}
+			err = p.LoadEdits(edits_dir)
+			if err != nil {
+				fmt.Printf("WARNING: failed to load edits: %s\n", err)
+			}
 			id++
 			photos = append(photos, p)
 		}

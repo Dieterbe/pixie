@@ -17,6 +17,10 @@ photosApp.config(['$routeProvider',
         templateUrl: 'partials/photos.html',
         controller: 'PhotosCtrl'
       }).
+      when('/:dir/:basename', {
+        templateUrl: 'partials/photo-detail.html',
+        controller: 'PhotoDetailCtrl'
+      }).
       otherwise({
         redirectTo: '/'
       });
