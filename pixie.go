@@ -15,13 +15,16 @@ import (
 	"mime"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
 var thumbnail_dir = config.String("thumbnail_dir", "")
 var tmsu_file = config.String("tmsu_file", "")
+var editor = config.String("editor", "gimp")
 
 type Photo struct {
 	Id    int               `json:"id"`
@@ -88,11 +91,11 @@ func (p *Photo) LoadEdits(edits_dir string, edits_filetags map[string]string) er
 		key := strings.Replace(match_path, edit_base, "", 1)
 		key = strings.Replace(key, p.Ext, "", 1)
 		if key == "" {
-			key = "standard"
+			key = "unnamed"
 		} else {
 			key = key[1:] // strip leading '_', '-', etc
 		}
-		edit, err := NewPhoto(i, edits_dir, match_path, p.Ext, edits_filetags, "", nil)
+		edit, err := NewPhoto(i, edits_dir, path.Base(match_path), p.Ext, edits_filetags, "", nil)
 		if err != nil {
 			return errors.New(fmt.Sprintf("could not initialize edit %s for %s: %s", key, p, err))
 		}
@@ -133,6 +136,9 @@ func api_photo_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.
 func find_edits_dir(dir string) (string, error) {
 	edits_dir := strings.Replace(dir, "originals", "edits", 1)
 	edits_dir = strings.Replace(edits_dir, "originals-generated", "edits", 1)
+	if edits_dir == dir {
+		fmt.Fprintf(os.Stderr, "WARNING: '%s' not in a format that allows finding an edits dir (needs 'originals' subdir)\n", dir)
+	}
 	_, err := os.Stat(edits_dir)
 	if err != nil {
 		return edits_dir, nil
@@ -141,6 +147,13 @@ func find_edits_dir(dir string) (string, error) {
 		return "", nil
 	}
 	return edits_dir, err
+}
+
+func IsPhoto(f os.FileInfo) (isPhoto bool, name string, ext string) {
+	name = f.Name()
+	ext = filepath.Ext(name)
+	isPhoto = strings.HasPrefix(mime.TypeByExtension(ext), "image/")
+	return
 }
 
 // get a list of photos (with tags) for a given dir
@@ -166,24 +179,21 @@ func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql
 
 	filetags, err := backend.GetFileTags(dir, conn_sqlite)
 	if err != nil {
-		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags for main dir '%s': %s", dir, err)}, 503)
 		return
 	}
 	edits_filetags := make(map[string]string)
 	if edits_dir != "" {
-		edits_filetags, err = backend.GetFileTags(dir, conn_sqlite)
+		edits_filetags, err = backend.GetFileTags(edits_dir, conn_sqlite)
 		if err != nil {
-			backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
+			backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags for edits_dir '%s': %s", dir, err)}, 503)
 			return
 		}
 	}
 
 	id := 0
 	for _, f := range list {
-		name := f.Name()
-		ext := filepath.Ext(name)
-		mime := mime.TypeByExtension(ext)
-		if strings.HasPrefix(mime, "image/") {
+		if isPhoto, name, ext := IsPhoto(f); isPhoto {
 			p, err := NewPhoto(id, dir, name, ext, filetags, edits_dir, edits_filetags)
 			if err != nil {
 				fmt.Printf("WARNING: failed to create Photo instance: %s\n", err)
@@ -199,7 +209,57 @@ func api_photos_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql
 	}
 }
 
-func api_edit_handler(w http.ResponseWriter, r *http.Request) {
+func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB) {
+	// this could be more elegant by getting entire photo as json and just converting json to go object.
+	err := r.ParseForm()
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
+		return
+	}
+	id, err := strconv.Atoi(r.Form.Get("id"))
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot parse id: %s", err)}, 503)
+	}
+	dir := r.Form.Get("dir")
+	name := r.Form.Get("name")
+	if dir == "" || name == "" {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
+		return
+	}
+	err = exec.Command(*editor, path.Join(dir, name)).Run()
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edit did not complete successfully: %s", err)}, 503)
+		return
+	}
+	ext := path.Ext(name)
+	filetags, err := backend.GetFileTags(dir, conn_sqlite)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
+		return
+	}
+	edits_dir, err := find_edits_dir(dir)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edits directory '%s' seems to exist but unable to read: %s", edits_dir, err)}, 503)
+		return
+	}
+	edits_filetags := make(map[string]string)
+	if edits_dir != "" {
+		edits_filetags, err = backend.GetFileTags(dir, conn_sqlite)
+		if err != nil {
+			backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
+			return
+		}
+	}
+
+	p, err := NewPhoto(id, dir, name, ext, filetags, edits_dir, edits_filetags)
+	if err != nil {
+		fmt.Printf("WARNING: failed to create Photo instance: %s\n", err)
+	}
+	enc := json.NewEncoder(w)
+	err = enc.Encode(p)
+	if err != nil {
+		fmt.Printf("WARNING: failed to encode/write json: %s\n", err)
+	}
 }
 
 func main() {
@@ -215,7 +275,9 @@ func main() {
 	http.HandleFunc("/api/photo", func(w http.ResponseWriter, r *http.Request) {
 		api_photo_handler(w, r, conn_sqlite)
 	})
-	http.HandleFunc("/api/edit", api_edit_handler)
+	http.HandleFunc("/api/edit", func(w http.ResponseWriter, r *http.Request) {
+		api_edit_handler(w, r, conn_sqlite)
+	})
 
 	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails/", http.FileServer(http.Dir(*thumbnail_dir))))
 	http.Handle("/", http.FileServer(http.Dir(".")))

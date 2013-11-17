@@ -25,10 +25,9 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
         $scope.$apply(function () {
             console.log('creating edit for :', $scope.photos[$scope.focusIndex] );
             $scope.photos[$scope.focusIndex] = Edit.new($scope.photos[$scope.focusIndex], function(response) {
-                console.debug(e)
-                $scope.logs.push({msg: "created new edit " + $scope.directory, type: 'info'});
+                $scope.logs.push({msg: "created new edit for " + $scope.photos[$scope.focusIndex].name, type: 'info'});
             }, function(response) {
-                $scope.logs.push({msg: "failed to edit " + $scope.directory, type: 'error'});
+                $scope.logs.push({msg: "failed to edit " + $scope.photos[$scope.focusIndex].name, type: 'error'});
             });
         });
     };

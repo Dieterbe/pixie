@@ -52,6 +52,11 @@
                   <td>
                     <ul><li style="display: block;" ng-repeat="tag in photo.tags" class="label label-info">{{tag}}</li></ul>
                   </td>
+                  <td ng-repeat="(edit_key, edit) in photo.edits">
+                    <h6>{{edit_key}}</h6>
+                    <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{edit.thumb}}"></a>
+                    <ul><li style="display: block;" ng-repeat="tag in edit.tags" class="label label-info">{{tag}}</li></ul>
+                  </td>
                 </tr>
               </table>
             </div>
