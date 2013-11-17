@@ -37,6 +37,7 @@ that works on all posix file systems is very valuable (i.e. just directories, fi
 
 * tmsu tag database
 * golang (for building)
+* the gothum library, which uses graphicsmagick (to generate thumbnails for new edits)
 
 ## getting started 
 

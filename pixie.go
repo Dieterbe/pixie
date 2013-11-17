@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/Dieterbe/gothum/workers"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/stvp/go-toml-config"
 	"io"
@@ -51,7 +52,6 @@ func NewPhoto(id int, dir string, name string, ext string, filetags map[string]s
 	var tags_slice []string
 	tags_str, ok := filetags[name]
 	if ok {
-		fmt.Printf("%s: '%s'\n", name, tags_str)
 		tags_slice = strings.Split(tags_str, ",")
 	} else {
 		tags_slice = make([]string, 0, 0)
@@ -80,7 +80,6 @@ func (p *Photo) LoadEdits(edits_dir string, edits_filetags map[string]string) er
 	basename := p.Name[:len(p.Name)-len(p.Ext)]
 	edit_base := path.Join(edits_dir, basename)
 	glob_pattern := fmt.Sprintf("%s*%s", edit_base, p.Ext)
-	fmt.Println("looking for edits ", glob_pattern)
 	p.Edits = make(map[string]*Photo)
 	matches, err := filepath.Glob(glob_pattern)
 	if err != nil {
@@ -255,6 +254,12 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 	if err != nil {
 		fmt.Printf("WARNING: failed to create Photo instance: %s\n", err)
 	}
+	for key, edit := range p.Edits {
+		err = workers.Resize("pixie-gothum", path.Join(edit.Dir, edit.Name), *thumbnail_dir)
+		if err != nil {
+			fmt.Printf("WARNING: failed to create thumbnail for edit '%s': %s\n", key, err)
+		}
+	}
 	enc := json.NewEncoder(w)
 	err = enc.Encode(p)
 	if err != nil {
@@ -281,6 +286,7 @@ func main() {
 
 	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails/", http.FileServer(http.Dir(*thumbnail_dir))))
 	http.Handle("/", http.FileServer(http.Dir(".")))
+
 	fmt.Printf("starting up on %s\n", addr)
 	log.Fatal(http.ListenAndServe(addr, nil))
 }
