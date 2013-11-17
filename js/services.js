@@ -15,3 +15,9 @@ photosServices.factory('Photo', ['$resource',
         untag: { method:'POST', params:{fname:"@fname", untag:"@tag"}, isArray: false}
     });
   }]);
+photosServices.factory('Edit', ['$resource',
+  function($resource){
+    return $resource('/api/edit', {}, {
+        new: { method:'POST', params:{id: "@id", dir:"@dir", name:"@name"}, isArray: false},
+    });
+  }]);

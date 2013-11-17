@@ -4,8 +4,8 @@
 
 var photosControllers = angular.module('photosControllers', []);
 
-photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 'Photo',
-  function($scope, $routeParams, Photos, Photo) {
+photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 'Photo', 'Edit',
+  function($scope, $routeParams, Photos, Photo, Edit) {
     $scope.setDirectory = function() {
         $scope.photos = Photos.get({directory: $scope.directory}, function(response) {
             $scope.logs.push({msg: "loaded " + $scope.directory, type: 'info'});
@@ -19,6 +19,17 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     $scope.openRecord = function () {
         $scope.$apply(function () {
         console.log('opening : ', $scope.photos[$scope.focusIndex] );
+        });
+    };
+    $scope.newEdit = function () {
+        $scope.$apply(function () {
+            console.log('creating edit for :', $scope.photos[$scope.focusIndex] );
+            $scope.photos[$scope.focusIndex] = Edit.new($scope.photos[$scope.focusIndex], function(response) {
+                console.debug(e)
+                $scope.logs.push({msg: "created new edit " + $scope.directory, type: 'info'});
+            }, function(response) {
+                $scope.logs.push({msg: "failed to edit " + $scope.directory, type: 'error'});
+            });
         });
     };
     $scope.moveDown = function () {
