@@ -162,7 +162,7 @@ func GetFileTags(dir string, conn_sqlite *sql.DB) (map[string]string, error) {
     group by f.id`
 	rows, err := conn_sqlite.Query(query, dir)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(fmt.Sprintf("query execution failed: '%s'", err))
 	}
 	filetags := make(map[string]string)
 	for rows.Next() {
@@ -174,7 +174,7 @@ func GetFileTags(dir string, conn_sqlite *sql.DB) (map[string]string, error) {
 		var tags sql.NullString
 		err := rows.Scan(&fname, &tags)
 		if err != nil {
-			return nil, err
+			return nil, errors.New(fmt.Sprintf("rows scan failed: '%s'", err))
 		}
 		filetags[fname.String] = tags.String
 	}
