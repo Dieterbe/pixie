@@ -14,7 +14,8 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
         });
     }
     // routeParams.dir
-    $scope.focusIndex = 0;
+    $scope.focusIndex = 0; // determines position top-bottom
+    $scope.subFocusIndex = 0; // determines position left (original) to right (any edits)
     $scope.logs = [];
     $scope.openRecord = function () {
         $scope.$apply(function () {
@@ -49,6 +50,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
         $scope.$apply(function () {
             if ($scope.focusIndex < $scope.photos.length -1) {
                 $scope.focusIndex++;
+                $scope.subFocusIndex = 0;
                 window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
             }
         });
@@ -57,7 +59,23 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
         $scope.$apply(function () {
             if($scope.focusIndex > 0 ) {
                 $scope.focusIndex--;
+                $scope.subFocusIndex = 0;
                 window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+            }
+        });
+    }
+    $scope.moveLeft = function () {
+        $scope.$apply(function () {
+            if($scope.subFocusIndex > 0 ) {
+                $scope.subFocusIndex--;
+            }
+        });
+    }
+    $scope.moveRight = function () {
+        $scope.$apply(function () {
+            // 3 edits means focusIndex can be max 3 (0 original, 1/2/3 for the edits)
+            if($scope.subFocusIndex < Object.keys($scope.photos[$scope.focusIndex].edits).length) {
+                $scope.subFocusIndex++;
             }
         });
     }

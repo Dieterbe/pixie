@@ -6,6 +6,8 @@
 
       <keybinding on="j" invoke="moveDown()" />
       <keybinding on="k" invoke="moveUp()" />
+      <keybinding on="l" invoke="moveRight()" />
+      <keybinding on="h" invoke="moveLeft()" />
       <keybinding on="g g" invoke="moveHome()" />
       <keybinding on="G" invoke="moveEnd()" />
       <keybinding on="o" invoke="openRecord()" />
@@ -46,21 +48,29 @@
               <h3 class="panel-title">{{photo.name}}</h3>
             </div>
             <div class="panel-body">
-              <table>
-                <tr>
-                  <td>
-                    <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
-                  </td>
-                  <td>
-                    <ul><li style="display: block;" ng-repeat="tag in photo.tags" class="label label-info">{{tag}}</li></ul>
-                  </td>
-                  <td ng-repeat="(edit_key, edit) in photo.edits">
-                    <h6>{{edit_key}}</h6>
-                    <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{edit.thumb}}"></a>
-                    <ul><li style="display: block;" ng-repeat="tag in edit.tags" class="label label-info">{{tag}}</li></ul>
-                  </td>
-                </tr>
+
+              <table class="table">
+                <tbody>
+                  <tr>
+                    <td style="border: 0px;" ng-class="{'active': (photo.id == focusIndex && 0 == subFocusIndex)}">
+                      <h5>original</h5>
+                      <div>
+                        <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
+                      </div>
+                      <div>
+                        <ul><li ng-repeat="tag in photo.tags" class="label label-info">{{tag}}</li></ul>
+                      </div>
+                    </td>
+
+                    <td ng-repeat="(edit_key, edit) in photo.edits" style="border: 0px;" ng-class="{'active': (photo.id == focusIndex && $index + 1 == subFocusIndex)}">
+                      <h5>{{edit_key}}</h5>
+                      <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{edit.thumb}}"></a>
+                      <ul><li ng-repeat="tag in edit.tags" class="label label-info">{{tag}}</li></ul>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
+
             </div>
           </div>
         </div>
