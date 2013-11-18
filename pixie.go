@@ -137,15 +137,22 @@ func find_edits_dir(dir string) (string, error) {
 	edits_dir = strings.Replace(edits_dir, "originals-generated", "edits", 1)
 	if edits_dir == dir {
 		fmt.Fprintf(os.Stderr, "WARNING: '%s' not in a format that allows finding an edits dir (needs 'originals' subdir)\n", dir)
-	}
-	_, err := os.Stat(edits_dir)
-	if err != nil {
-		return edits_dir, nil
-	}
-	if os.IsNotExist(err) {
 		return "", nil
 	}
-	return edits_dir, err
+	_, err := os.Stat(edits_dir)
+	if err == nil {
+		return edits_dir, nil
+	}
+	if !os.IsNotExist(err) {
+		return "", err
+	}
+	err = os.Mkdir(edits_dir, os.ModeDir)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "WARNING: Failed to create edits_dir '%s': %s\n", edits_dir, err)
+		return "", nil
+	}
+	return edits_dir, nil
+
 }
 
 func IsPhoto(f os.FileInfo) (isPhoto bool, name string, ext string) {

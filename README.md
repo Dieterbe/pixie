@@ -50,9 +50,10 @@ that works on all posix file systems is very valuable (i.e. just directories, fi
 
 ## TODO
 
-* when on a picture in pixie UI, allowing to open an editor & saving modified version in other dir.  Also, in the UI, showing the alternative options
-  for an image.
 * using multiple directories in the UI at the same time (e.g. if you have pics of the same thing taken with different camera's),
   by sorting and merging the image lists by time, you can more easily select the best ones.
 * a way to have "mirror directories", of files smaller than the originals, but bigger than thumbnails; so that export directories can
   point to those files.  (this also means that not every file should have be mirrored, only the ones which are used)
+* before making edit, copy file to somewhere. edit that and allow save, if saved and different, copy to edits dir
+if you open source file directly, you might accidentially overwrite it by saving it.
+but this means extra copying of data..
