@@ -31,6 +31,20 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             });
         });
     };
+    $scope.moveHome = function () {
+        $scope.$apply(function () {
+            $scope.focusIndex = 0;
+            $scope.subFocusIndex = 0;
+            window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+        });
+    }
+    $scope.moveEnd = function () {
+        $scope.$apply(function () {
+            $scope.focusIndex = $scope.photos.length -1
+            $scope.subFocusIndex = 0;
+            window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+        });
+    }
     $scope.moveDown = function () {
         $scope.$apply(function () {
             if ($scope.focusIndex < $scope.photos.length -1) {
