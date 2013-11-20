@@ -17,6 +17,20 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     $scope.focusIndex = 0; // determines position top-bottom
     $scope.subFocusIndex = 0; // determines position left (original) to right (any edits)
     $scope.logs = [];
+    $scope.getCurrentPhoto = function() {
+        var img = $scope.photos[$scope.focusIndex];
+        if ($scope.subFocusIndex > 0 ) {
+            var idx = 0;
+            for (var key in img.edits) {
+                idx++;
+                if (idx == $scope.subFocusIndex) {
+                    img = img.edits[key];
+                    break;
+                }
+            }
+        }
+        return img;
+    };
     $scope.openRecord = function () {
         $scope.$apply(function () {
         console.log('opening : ', $scope.photos[$scope.focusIndex] );
@@ -81,32 +95,35 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     }
     $scope.tag = function (tag) {
         $scope.$apply(function () {
-            var fname = $scope.directory + "/" + $scope.photos[$scope.focusIndex].name;
             var index = $scope.focusIndex; // not sure if needed, but by the time the callback fires we may have focused on other image
-            Photo.tag({fname: fname, tag: tag}, function(response) {
-                $scope.logs.push({msg: response.msg + ": " + fname + " (" + tag + ")", type: 'info'});
+            var img = $scope.getCurrentPhoto();
+            img.tag = tag;
+            Photo.tag(img, function(response) {
+                $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
                 if(response.msg != "tag already existed") {
                     $scope.photos[index]['tags'].push(tag);
                 }
             }, function(response) {
-                $scope.logs.push({msg: response.msg + ": "  + fname + " (" + tag + ")", type: 'error'});
+                $scope.logs.push({msg: response.msg + ": "  + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
         });
     }
+
     $scope.unTag = function (tag) {
         $scope.$apply(function () {
-            var fname = $scope.directory + "/" + $scope.photos[$scope.focusIndex].name;
             var index = $scope.focusIndex; // not sure if needed, but by the time the callback fires we may have focused on other image
-            Photo.untag({fname: fname, tag: tag}, function(response) {
+            var img = $scope.getCurrentPhoto();
+            img.tag = tag;
+            Photo.untag(img, function(response) {
                 console.debug(response);
-                $scope.logs.push({msg: response.msg + ": " + fname + " (" + tag + ")", type: 'info'});
+                $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
                 var tag_index = $scope.photos[index]['tags'].indexOf(tag)
                 if(tag_index!=-1){
                        $scope.photos[index]['tags'].splice(tag_index, 1);
                 }
             }, function(response) {
                 console.debug(response);
-                $scope.logs.push({msg: response.msg + ": " + fname + " (" + tag + ")", type: 'error'});
+                $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
         });
     }

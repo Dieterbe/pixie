@@ -112,8 +112,9 @@ func api_photo_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.
 	}
 	tag := r.Form.Get("tag")
 	untag := r.Form.Get("untag")
-	fname := r.Form.Get("fname")
-	if fname == "" {
+	dir := r.Form.Get("dir")
+	name := r.Form.Get("name")
+	if dir == "" || name == "" {
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
 	}
@@ -126,9 +127,9 @@ func api_photo_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.
 		return
 	}
 	if tag != "" {
-		backend.Tag(w, r, conn_sqlite, fname, tag)
+		backend.Tag(w, r, conn_sqlite, path.Join(dir, name), tag)
 	} else {
-		backend.UnTag(w, r, conn_sqlite, fname, untag)
+		backend.UnTag(w, r, conn_sqlite, path.Join(dir, name), untag)
 	}
 }
 
