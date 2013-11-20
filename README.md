@@ -1,4 +1,12 @@
-An opiniated photo management app for minimalists.
+Pixie: an opiniated photo management app for minimalists.
+
+## In a nutshell
+
+* small app that you run locally, it loads pictures from given directories
+* use vim-style keybinds to navigate, and add/remove tags to pictures
+* easily create edits of pictures, and optionally tag them the same way.
+* use script to generate export/album directories by finding all pictures matching certain criteria.
+
 
 Based on my ideals wrt photo storage and management, I came up with this tool (and related scripts).
 You may or may not agree with them.  Here we go..
