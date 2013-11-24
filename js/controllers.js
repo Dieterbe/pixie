@@ -4,21 +4,40 @@
 
 var photosControllers = angular.module('photosControllers', []);
 
-photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 'Photo', 'Edit',
-  function($scope, $routeParams, Photos, Photo, Edit) {
-    $scope.setDirectory = function() {
-        $scope.photos = Photos.get({directory: $scope.directory}, function(response) {
-            $scope.logs.push({msg: "loaded " + $scope.directory, type: 'info'});
-        }, function(response) {
-            $scope.logs.push({msg: "failed to load " + $scope.directory, type: 'error'});
-        });
-    }
+photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 'Photo', 'Edit', '$timeout',
+  function($scope, $routeParams, Photos, Photo, Edit, $timeout) {
+
     // routeParams.dir
     $scope.focusIndex = 0; // determines position top-bottom
     $scope.subFocusIndex = 0; // determines position left (original) to right (any edits)
+    $scope.viewDistance = 7; // how many pictures to put in the DOM before and after the focused photo
     $scope.logs = [];
+
+    $scope.setDirectory = function() {
+        $scope.focusIndex = 0;
+        $scope.subFocusIndex = 0;
+        $scope.photosAll = Photos.get({directory: $scope.directory}, function(response) {
+            $scope.logs.push({msg: "loaded " + $scope.directory, type: 'info'});
+            $scope.setPhotosView();
+        }, function(response) {
+            $scope.logs.push({msg: "failed to load " + $scope.directory, type: 'error'});
+            $scope.photosAll = [];
+            $scope.setPhotosView();
+        });
+    }
+    $scope.setPhotosView = function () {
+        var lower = $scope.focusIndex - $scope.viewDistance;
+        if (lower < 0) {
+            lower = 0;
+        }
+        var upper = $scope.focusIndex + $scope.viewDistance + 1;
+        if (upper > $scope.photosAll.length) {
+            upper = $scope.photosAll.length;
+        }
+        $scope.photosView = $scope.photosAll.slice(lower, upper);
+    }
     $scope.getCurrentPhoto = function() {
-        var img = $scope.photos[$scope.focusIndex];
+        var img = $scope.photosAll[$scope.focusIndex];
         if ($scope.subFocusIndex > 0 ) {
             var idx = 0;
             for (var key in img.edits) {
@@ -33,39 +52,41 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     };
     $scope.openRecord = function () {
         $scope.$apply(function () {
-        console.log('opening : ', $scope.photos[$scope.focusIndex] );
+        console.log('opening : ', $scope.photosAll[$scope.focusIndex] );
         });
     };
     $scope.newEdit = function () {
         $scope.$apply(function () {
-            console.log('creating edit for :', $scope.photos[$scope.focusIndex] );
-            $scope.photos[$scope.focusIndex] = Edit.new($scope.photos[$scope.focusIndex], function(response) {
-                $scope.logs.push({msg: "created new edit for " + $scope.photos[$scope.focusIndex].name, type: 'info'});
+            console.log('creating edit for :', $scope.photosAll[$scope.focusIndex] );
+            $scope.photosAll[$scope.focusIndex] = Edit.new($scope.photosAll[$scope.focusIndex], function(response) {
+                $scope.logs.push({msg: "created new edit for " + $scope.photosAll[$scope.focusIndex].name, type: 'info'});
             }, function(response) {
-                $scope.logs.push({msg: "failed to edit " + $scope.photos[$scope.focusIndex].name, type: 'error'});
+                $scope.logs.push({msg: "failed to edit " + $scope.photosAll[$scope.focusIndex].name, type: 'error'});
             });
+            $scope.setPhotosView();
         });
     };
     $scope.moveHome = function () {
         $scope.$apply(function () {
             $scope.focusIndex = 0;
             $scope.subFocusIndex = 0;
-            window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+            $scope.setPhotosView();
         });
     }
     $scope.moveEnd = function () {
         $scope.$apply(function () {
-            $scope.focusIndex = $scope.photos.length -1
+            $scope.focusIndex = $scope.photosAll.length -1
             $scope.subFocusIndex = 0;
-            window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+            $scope.setPhotosView();
         });
     }
     $scope.moveDown = function () {
         $scope.$apply(function () {
-            if ($scope.focusIndex < $scope.photos.length -1) {
+            if ($scope.focusIndex < $scope.photosAll.length -1) {
                 $scope.focusIndex++;
                 $scope.subFocusIndex = 0;
-                window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+                $scope.setPhotosView();
+                $scope.photosAll[$scope.focusIndex].foobar = 'true';
             }
         });
     }
@@ -74,7 +95,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             if($scope.focusIndex > 0 ) {
                 $scope.focusIndex--;
                 $scope.subFocusIndex = 0;
-                window.scrollTo(0, $("#photo-" + $scope.focusIndex).offset().top - 200);
+                $scope.setPhotosView();
             }
         });
     }
@@ -87,8 +108,8 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     }
     $scope.moveRight = function () {
         $scope.$apply(function () {
-            // 3 edits means focusIndex can be max 3 (0 original, 1/2/3 for the edits)
-            if($scope.subFocusIndex < Object.keys($scope.photos[$scope.focusIndex].edits).length) {
+            // 3 edits means subFocusIndex can be max 3 (0 original, 1/2/3 for the edits)
+            if($scope.subFocusIndex < Object.keys($scope.photosAll[$scope.focusIndex].edits).length) {
                 $scope.subFocusIndex++;
             }
         });
@@ -101,11 +122,12 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             Photo.tag(img, function(response) {
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
                 if(response.msg != "tag already existed") {
-                    $scope.photos[index]['tags'].push(tag);
+                    $scope.photosAll[index]['tags'].push(tag);
                 }
             }, function(response) {
                 $scope.logs.push({msg: response.msg + ": "  + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
+            $scope.setPhotosView();
         });
     }
 
@@ -117,14 +139,15 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             Photo.untag(img, function(response) {
                 console.debug(response);
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
-                var tag_index = $scope.photos[index]['tags'].indexOf(tag)
+                var tag_index = $scope.photosAll[index]['tags'].indexOf(tag)
                 if(tag_index!=-1){
-                       $scope.photos[index]['tags'].splice(tag_index, 1);
+                       $scope.photosAll[index]['tags'].splice(tag_index, 1);
                 }
             }, function(response) {
                 console.debug(response);
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
+            $scope.setPhotosView();
         });
     }
     // todo $scope.autotag = function (tag) {

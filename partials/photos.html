@@ -46,10 +46,10 @@
       </div>
 
       <div class="photos">
-        <div ng-repeat="photo in photos">
+        <div data-ng-repeat="photo in photosView">
           <div class="panel" ng-class="{'panel-primary': photo.id == focusIndex, 'panel-info': photo.id != focusIndex}">
-            <div id="photo-{{photo.id}}" class="panel-heading">
-              <h3 class="panel-title">{{photo.name}}</h3>
+            <div id="photo-{{photo.id}}" class="panel-heading" data-scroll-if="photo.id != focusIndex">
+              <h3 class="panel-title">{{photo.name}} ({{photo.id + 1 }} / {{photosAll.length}})</h3>
             </div>
             <div class="panel-body">
 
