@@ -2,12 +2,12 @@
 <div><span class="hint"></span>
 </div>
 </h1>
-<div><div class="developer-guide-page developer-guide-dependency-injection-page"><h2>Dependency Injection</h2>
+<div><div class="developer-guide-page developer-guide-dependency-injection-page"><h2 id="dependency-injection">Dependency Injection</h2>
 <p>Dependency Injection (DI) is a software design pattern that deals with how code gets hold of its
 dependencies.</p>
 <p>For in-depth discussion about DI, see <a href="http://en.wikipedia.org/wiki/Dependency_injection">Dependency Injection</a> at Wikipedia, <a href="http://martinfowler.com/articles/injection.html">Inversion of Control</a> by Martin Fowler, or read about DI in your favorite software design pattern
 book.</p>
-<h3>DI in a nutshell</h2>
+<h3 id="dependency-injection_di-in-a-nutshell">DI in a nutshell</h3>
 <p>There are only three ways an object or a function can get a hold of its dependencies:</p>
 <ol>
 <li><p>The dependency can be created, typically using the <code>new</code> operator.</p>
@@ -36,6 +36,7 @@ dependency from the component. The dependency is simply handed to the component.
 is simply handed the <code>greeter</code> at runtime.</p>
 <p>This is desirable, but it puts the responsibility of getting hold of the dependency on the
 code that constructs <code>SomeClass</code>.</p>
+<p><img class="pull-right" style="padding-left: 3em; padding-bottom: 1em;" src="img/guide/concepts-module-injector.png"></p>
 <p>To manage the responsibility of dependency creation, each Angular application has an <a href="api/angular.injector"><code>injector</code></a>. The injector is a service locator that is responsible for
 construction and lookup of dependencies.</p>
 <p>Here is an example of using the injector service:</p>
@@ -85,14 +86,14 @@ dependency lookup responsibility to the injector by declaring the dependencies a
 dependencies of <code>MyController</code> without the controller ever knowing about the injector. This is
 the best outcome. The application code simply asks for the dependencies it needs, without having to
 deal with the injector. This setup does not break the Law of Demeter.</p>
-<h2>Dependency Annotation</h2>
+<h3 id="dependency-injection_dependency-annotation">Dependency Annotation</h3>
 <p>How does the injector know what service needs to be injected?</p>
 <p>The application developer needs to provide annotation information that the injector uses in order
 to resolve the dependencies. Throughout Angular, certain API functions are invoked using the
 injector, as per the API documentation. The injector needs to know what services to inject into
 the function. Below are three equivalent ways of annotating your code with service name
 information. These can be used interchangeably as you see fit and are equivalent.</p>
-<h4>Inferring Dependencies</h3>
+<h4 id="dependency-injection_dependency-annotation_inferring-dependencies">Inferring Dependencies</h4>
 <p>The simplest way to get hold of the dependencies, is to assume that the function parameter names
 are the names of the dependencies.</p>
 <pre class="prettyprint linenums">
@@ -105,7 +106,7 @@ function declaration and extracting the parameter names. In the above example <c
 <code>greeter</code> are two services which need to be injected into the function.</p>
 <p>While straightforward, this method will not work with JavaScript minifiers/obfuscators as they
 rename the method parameter names. This makes this way of annotating only useful for <a href="http://www.pretotyping.org/">pretotyping</a>, and demo applications.</p>
-<h3><code>$inject</code> Annotation</h3>
+<h4 id="dependency-injection_dependency-annotation_-annotation"><code>$inject</code> Annotation</h4>
 <p>To allow the minifers to rename the function parameters and still be able to inject right services
 the function needs to be annotated with the <code>$inject</code> property. The <code>$inject</code> property is an array
 of service names to inject.</p>
@@ -121,7 +122,7 @@ Care must be taken that the <code>$inject</code> annotation is kept in sync with
 function declaration.</p>
 <p>This method of annotation is useful for controller declarations since it assigns the annotation
 information with the function.</p>
-<h3>Inline Annotation</h3>
+<h4 id="dependency-injection_dependency-annotation_inline-annotation">Inline Annotation</h4>
 <p>Sometimes using the <code>$inject</code> annotation style is not convenient such as when annotating
 directives.</p>
 <p>For example:</p>
@@ -148,9 +149,9 @@ directives.</p>
 </pre>
 <p>Keep in mind that all of the annotation styles are equivalent and can be used anywhere in Angular
 where injection is supported.</p>
-<h2>Where can I use DI?</h3>
+<h3 id="dependency-injection_where-can-i-use-di">Where can I use DI?</h3>
 <p>DI is pervasive throughout Angular. It is typically used in controllers and factory methods. </p>
-<h3>DI in controllers</h3>
+<h4 id="dependency-injection_where-can-i-use-di_di-in-controllers">DI in controllers</h4>
 <p>Controllers are classes which are responsible for application behavior. The recommended way of 
 declaring controllers is using the array notation:</p>
 <pre class="prettyprint linenums">
@@ -163,7 +164,7 @@ declaring controllers is using the array notation:</p>
   }]);
 </pre>
 <p>This avoids the creation of global functions for controllers and also protects against minification.</p>
-<h3>Factory methods</h4>
+<h4 id="dependency-injection_where-can-i-use-di_factory-methods">Factory methods</h4>
 <p>Factory methods are responsible for creating most objects in Angular. Examples are directives,
 services, and filters. The factory methods are registered with the module, and the recommended way
 of declaring factories is:</p>

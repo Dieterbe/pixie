@@ -2,7 +2,7 @@
 <div><span class="hint"></span>
 </div>
 </h1>
-<div><div class="developer-guide-page developer-guide-i18n-and-l10n-page"><h2>I18n and L10n in AngularJS</h1>
+<div><div class="developer-guide-page developer-guide-i18n-and-l10n-page"><h2 id="i18n-and-l10n-in-angularjs">I18n and L10n in AngularJS</h2>
 <p><strong>What is i18n and l10n?</strong></p>
 <p>Internationalization, abbreviated i18n, is the process of developing products in such a way that
 they can be localized for languages and cultures easily. Localization, abbreviated l10n, is the
@@ -25,26 +25,26 @@ valid locale IDs that have both language codes and country codes. Because specif
 in locale ID is optional,  locale IDs such as en, zh,  and sk are also valid. See the <a href="http://userguide.icu-project.org/locale">ICU</a> website for more information about using locale IDs.</p>
 <p><strong>Supported locales in Angular</strong>
 Angular separates number and datetime format rule sets into different files, each file for a
-particular locale. You can find a list of currently supported locales <a href="https://github.com/angular/angular.js/tree/master/i18n/locale">here</a></p>
-<h1>Providing locale rules to Angular</h1>
+particular locale. You can find a list of currently supported locales <a href="https://github.com/angular/angular.js/tree/master/src/ngLocale">here</a></p>
+<h2 id="providing-locale-rules-to-angular">Providing locale rules to Angular</h2>
 <p>There are two approaches to providing locale rules to Angular:</p>
 <p><strong>1. Pre-bundled rule sets</strong></p>
 <p>You can pre-bundle the desired locale file with Angular by concatenating the content of the
 locale-specific file to the end of <code>angular.js</code> or <code>angular.min.js</code> file.</p>
 <p>For example on *nix, to create an angular.js file that contains localization rules for german
 locale, you can do the following:</p>
-<p><code>cat angular.js i18n/angular-locale_de-ge.js &gt; angular_de-ge.js</code></p>
-<p>When the application containing <code>angular_de-ge.js</code> script instead of the generic angular.js script
+<p><code>cat angular.js i18n/angular-locale_de-de.js &gt; angular_de-de.js</code></p>
+<p>When the application containing <code>angular_de-de.js</code> script instead of the generic angular.js script
 starts, Angular is automatically pre-configured with localization rules for the german locale.</p>
 <p><strong>2. Including locale js script in index.html page</strong></p>
 <p>You can also include the locale specific js file in the index.html page. For example, if one client
-requires German locale, you would serve index_de-ge.html which will look something like this:</p>
+requires German locale, you would serve index_de-de.html which will look something like this:</p>
 <pre class="prettyprint linenums">
 &lt;html ng-app&gt;
  &lt;head&gt;
 ….
    &lt;script src="angular.js"&gt;&lt;/script&gt;
-   &lt;script src="i18n/angular-locale_de-ge.js"&gt;&lt;/script&gt;
+   &lt;script src="i18n/angular-locale_de-de.js"&gt;&lt;/script&gt;
 ….
  &lt;/head&gt;
 &lt;/html&gt;
@@ -55,7 +55,7 @@ each locale that your app may be localized into. You also need to configure your
 the correct file that correspond to the desired locale.</p>
 <p>However, the second approach (Including locale js script in index.html page) is likely to be slower
 because an extra script needs to be loaded.</p>
-<h1>&quot;Gotchas&quot;</h2>
+<h2 id="&quot;gotchas&quot;">&quot;Gotchas&quot;</h2>
 <p><strong>Currency symbol &quot;gotcha&quot;</strong></p>
 <p>Angular&#39;s <a href="http://docs.angularjs.org/#!/api/ng.filter:currency">currency filter</a> allows
 you to use the default currency symbol from the <a href="api/ng.$locale"><code>locale service</code></a>,

@@ -4,7 +4,7 @@
 </div>
 </h1>
 <div><pre class="minerr-errmsg" error-display="Provider '{0}' must define $get factory method.">Provider '{0}' must define $get factory method.</pre>
-<h2 id="Description">Description</h2>
+<h2 id="description">Description</h2>
 <div class="description"><div class="-injector-page -injector-pget-page"><p>This error occurs when attempting to register a provider that does not have a
 <code>$get</code> method. For example:</p>
 <pre><code>function BadProvider() {} // No $get method!
@@ -16,6 +16,6 @@ angular.module(&quot;myApp&quot;, [])
 }
 angular.module(&quot;myApp&quot;, [])
   .provider(&#39;good&#39;, GoodProvider);</code></pre>
-<p>For more information, refer to the <a href="api/AUTO.$provide#provider"><code>$provide.provider</code></a> api doc.</p>
+<p>For more information, refer to the <a href="api/AUTO.$provide#methods_provider"><code>$provide.provider</code></a> api doc.</p>
 </div></div>
 </div>

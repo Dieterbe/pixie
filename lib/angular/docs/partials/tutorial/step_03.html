@@ -17,9 +17,9 @@ and quickly detects regressions.</p>
 user types into the search box.</p>
 <p>The most important differences between Steps 2 and 3 are listed below. You can see the full diff on
 <a href="https://github.com/angular/angular-phonecat/compare/step-2...step-3">GitHub</a>:</p>
-<h3>Controller</h2>
+<h3 id="controller">Controller</h3>
 <p>We made no changes to the controller.</p>
-<h2>Template</h2>
+<h3 id="template">Template</h3>
 <p><strong><code>app/index.html</code>:</strong>
 <pre class="prettyprint linenums">
   &lt;div class="container-fluid"&gt;
@@ -45,7 +45,7 @@ user types into the search box.</p>
   &lt;/div&gt;
 </pre>
 <p>We added a standard HTML <code>&lt;input&gt;</code> tag and used Angular&#39;s
-<a href="api/ng.filter:filter"><code>$filter</code></a> function to process the input for the
+<a href="api/ng.filter:filter"><code>filter</code></a> function to process the input for the
 <a href="api/ng.directive:ngRepeat"><code>ngRepeat</code></a> directive.</p>
 <p>This lets a user enter search criteria and immediately see the effects of their search on the phone
 list. This new code demonstrates the following:</p>
@@ -56,15 +56,17 @@ name of the input box to a variable of the same name in the data model and keeps
 available as a filter input in the list repeater (<code>phone in phones | filter:</code><strong><code>query</code></strong>). When
 changes to the data model cause the repeater&#39;s input to change, the repeater efficiently updates
 the DOM to reflect the current state of the model.</p>
-<pre><code>&lt;img  class=&quot;diagram&quot; src=&quot;img/tutorial/tutorial_03.png&quot;&gt;</code></pre>
 </li>
+</ul>
+<p><img  class="diagram" src="img/tutorial/tutorial_03.png"></p>
+<ul>
 <li><p>Use of the <code>filter</code> filter: The <a href="api/ng.filter:filter"><code>filter</code></a> function uses the
 <code>query</code> value to create a new array that contains only those records that match the <code>query</code>.</p>
 <p><code>ngRepeat</code> automatically updates the view in response to the changing number of phones returned
 by the <code>filter</code> filter. The process is completely transparent to the developer.</p>
 </li>
 </ul>
-<h2>Test</h3>
+<h3 id="test">Test</h3>
 <p>In Step 2, we learned how to write and run unit tests. Unit tests are perfect for testing
 controllers and other components of our application written in JavaScript, but they can&#39;t easily
 test DOM manipulation or the wiring of our application. For these, an end-to-end test is a much
@@ -107,10 +109,12 @@ Jasmine, the end-to-end test uses APIs of <a href="guide/dev_guide.e2e-testing">
 end-to-end tests! Use <code>./scripts/e2e-test.sh</code> script for that. End-to-end tests are slow, so unlike
 with unit tests, Karma will exit after the test run and will not automatically rerun the test
 suite on every file change. To rerun the test suite, execute the <code>e2e-test.sh</code> script again.</p>
+<p>Note: You must ensure you&#39;ve installed karma-ng-scenario prior to running the <code>e2e-test.sh</code> script.
+You can do this by issuing <code>npm install karma-ng-scenario</code> into your terminal.</p>
 <p>This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in Angular. Although this example is for a simple test, it
 really is that easy to set up any functional, readable, end-to-end test.</p>
-<h2>Experiments</h1>
+<h2 id="experiments">Experiments</h2>
 <ul>
 <li><p>Display the current value of the <code>query</code> model by adding a <code>{{query}}</code> binding into the
 <code>index.html</code> template, and see how it changes when you type in the input box.</p>
@@ -156,7 +160,7 @@ the browser. The app is live! You can change the search query to prove it. Notic
 is for troubleshooting end-to-end tests.</p>
 </li>
 </ul>
-<h1>Summary</h2>
+<h2 id="summary">Summary</h2>
 <p>We have now added full text search and included a test to verify that search works! Now let&#39;s go on
 to <a href="tutorial/step_04">step 4</a> to learn how to add sorting capability to the phone app.</p>
 <ul doc-tutorial-nav="3"></ul></div></div>

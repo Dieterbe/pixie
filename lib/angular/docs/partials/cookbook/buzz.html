@@ -7,18 +7,18 @@ templates. Angular has a resource factory that can be used to give names to the 
 attach behavior to them. For example you can use the
 <a href="http://code.google.com/apis/buzz/v1/getting_started.html#background-operations|">Google Buzz API</a>
 to retrieve Buzz activity and comments.</p>
-<h3>Source</h2>
-<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-164" source-edit-css="" source-edit-js="script.js-163" source-edit-json="" source-edit-unit="" source-edit-scenario="scenario.js-165"></div>
+<h3 id="source">Source</h3>
+<div source-edit="" source-edit-deps="angular.js script.js" source-edit-html="index.html-178" source-edit-css="" source-edit-js="script.js-177" source-edit-json="" source-edit-unit="" source-edit-scenario="scenario.js-179"></div>
 <div class="tabbable"><div class="tab-pane" title="index.html">
-<pre class="prettyprint linenums" ng-set-text="index.html-164" ng-html-wrap=" angular.js script.js"></pre>
-<script type="text/ng-template" id="index.html-164">
+<pre class="prettyprint linenums" ng-set-text="index.html-178" ng-html-wrap=" angular.js script.js"></pre>
+<script type="text/ng-template" id="index.html-178">
     
     <div ng-controller="BuzzController">
      <input ng-model="userId"/>
      <button ng-click="fetch()">fetch</button>
      <hr/>
      <div class="buzz" ng-repeat="item in activities.data.items">
-      <h2 style="font-size: 15px;">
+      <h2 style="font-size: 15px;" id="-expand-replies-{{itemlinksreplies[0]count}}-">
        <img ng-src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
        <a ng-href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
        <a href ng-click="expandReplies(item)" style="float: right;">
@@ -36,8 +36,8 @@ to retrieve Buzz activity and comments.</p>
  </script>
 </div>
 <div class="tab-pane" title="script.js">
-<pre class="prettyprint linenums" ng-set-text="script.js-163"></pre>
-<script type="text/ng-template" id="script.js-163">
+<pre class="prettyprint linenums" ng-set-text="script.js-177"></pre>
+<script type="text/ng-template" id="script.js-177">
     BuzzController.$inject = ['$scope', '$resource'];
     function BuzzController($scope, $resource) {
      $scope.userId = 'googlebuzz';
@@ -59,8 +59,8 @@ to retrieve Buzz activity and comments.</p>
     </script>
 </div>
 <div class="tab-pane" title="End to end test">
-<pre class="prettyprint linenums" ng-set-text="scenario.js-165"></pre>
-<script type="text/ng-template" id="scenario.js-165">
+<pre class="prettyprint linenums" ng-set-text="scenario.js-179"></pre>
+<script type="text/ng-template" id="scenario.js-179">
   xit('fetch buzz and expand', function() {
     element(':button:contains(fetch)').click();
     expect(repeater('div.buzz').count()).toBeGreaterThan(0);
@@ -69,6 +69,6 @@ to retrieve Buzz activity and comments.</p>
   });
  </script>
 </div>
-</div><h2>Demo</h3>
-<div class="well doc-example-live animate-container" ng-embed-app="" ng-set-html="index.html-164" ng-eval-javascript="script.js-163"></div>
+</div><h3 id="-expand-replies-{{itemlinksreplies[0]count}}-_demo">Demo</h3>
+<div class="well doc-example-live animate-container" ng-embed-app="" ng-set-html="index.html-178" ng-eval-javascript="script.js-177"></div>
 </div></div>

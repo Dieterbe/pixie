@@ -2,25 +2,25 @@
 <div><span class="hint"></span>
 </div>
 </h1>
-<div><div class="downloading-page"><h2>Including angular scripts from the Google CDN</h1>
+<div><div class="downloading-page"><h2 id="including-angular-scripts-from-the-google-cdn">Including angular scripts from the Google CDN</h2>
 <p>The quickest way to get started is to point your html <code>&lt;script&gt;</code> tag to a Google CDN URL.
 This way, you don&#39;t have to download anything or maintain a local copy.</p>
 <p>There are two types of angular script URLs you can point to, one for development and one for
 production:</p>
 <ul>
-<li><strong>angular-<version>.js</strong> — This is the human-readable, non-minified version, suitable for web
+<li><strong>angular.js</strong> — This is the human-readable, non-minified version, suitable for web
 development.</li>
-<li><strong>angular-<version>.min.js</strong> — This is the minified version, which we strongly suggest you use in
+<li><strong>angular.min.js</strong> — This is the minified version, which we strongly suggest you use in
 production.</li>
 </ul>
 <p>To point your code to an angular script on the Google CDN server, use the following template.  This
-example points to the minified version 1.0.2:</p>
+example points to the minified version 1.2.0:</p>
 <pre class="prettyprint linenums">
   &lt;!doctype html&gt;
   &lt;html ng-app&gt;
     &lt;head&gt;
       &lt;title&gt;My Angular App&lt;/title&gt;
-      &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"&gt;&lt;/script&gt;
+      &lt;script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js"&gt;&lt;/script&gt;
     &lt;/head&gt;
     &lt;body&gt;
     &lt;/body&gt;
@@ -30,7 +30,7 @@ example points to the minified version 1.0.2:</p>
 you can use the <a href="http://code.angularjs.org/">http://code.angularjs.org/</a> URL which was the previous recommended location for
 hosted code source. If you&#39;re still using the angular server you should switch to the CDN version
 for even faster loading times.</p>
-<h1>Downloading and hosting angular files locally</h2>
+<h2 id="downloading-and-hosting-angular-files-locally">Downloading and hosting angular files locally</h2>
 <p>This option is for those who want to work with angular offline, or those who want to host the
 angular files on their own servers.</p>
 <p>If you navigate to <a href="http://code.angularjs.org/">http://code.angularjs.org/</a>, you&#39;ll see a directory listing with all of the
@@ -52,7 +52,7 @@ for this angular version. Use this file to get everything in a single download.<
 </li>
 <li><p><strong><code>angular-mocks.js</code></strong> — This file contains an implementation of mocks that makes
 testing angular apps even easier. Your unit/integration test harness should load this file after
-<code>angular-&lt;version&gt;.js</code> is loaded.</p>
+<code>angular.js</code> is loaded.</p>
 </li>
 <li><p><strong><code>angular-scenario.js</code></strong> — This file is a very nifty JavaScript file that allows you
 to write and execute end-to-end tests for angular applications.</p>
@@ -62,11 +62,25 @@ Angular modules, you can load them asynchronously and in any order as long as yo
 contents of this file are copy&amp;pasted into the <code>index.html</code> to avoid even the initial request to <code>angular-loader.min.js</code>.
 See <a href="https://github.com/angular/angular-seed/blob/master/app/index-async.html">angular-seed</a> for an example of usage.</p>
 </li>
-<li><p><strong><code>angular-resource.js</code></strong>, <strong><code>angular-cookies.js</code></strong>, etc - extra Angular modules with additional functionality.</p>
+<li><p><strong>Additional Angular modules:</strong>  optional modules with additional functionality. These files should be loaded
+after the core <code>angular.js</code> file:</p>
+<ul>
+<li><strong><code>angular-animate.js</code></strong> - Enable animation support</li>
+<li><strong><code>angular-cookies.js</code></strong> - A convenient wrapper for reading and writing browser cookies</li>
+<li><strong><code>angular-resource.js</code></strong> - Interaction support with RESTful services via the $resource service</li>
+<li><strong><code>angular-route.js</code></strong> - Routing and deeplinking services and directives for angular apps</li>
+<li><strong><code>angular-sanitize.js</code></strong> - Functionality to sanitize HTML</li>
+<li><strong><code>angular-touch.js</code></strong> - Touch events and other helpers for touch-enabled devices</li>
+</ul>
 </li>
+</ul>
+<ul>
 <li><p><strong><code>docs</code></strong> — this directory contains all the files that compose the
 <a href="http://docs.angularjs.org/">http://docs.angularjs.org/</a> documentation app. These files are handy to see the older version of
 our docs, or even more importantly, view the docs offline.</p>
+</li>
+<li><p><strong><code>i18n</code></strong> - this directory contains locale specific <code>ngLocale</code> angular modules to override the defaults
+defined in the <code>ng</code> module.</p>
 </li>
 </ul>
 </div></div>

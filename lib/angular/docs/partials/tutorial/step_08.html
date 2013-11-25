@@ -16,7 +16,7 @@ is displayed.</p>
 <p>To implement the phone details view we will use <a href="api/ng.$http"><code>$http</code></a> to fetch
 our data, and we&#39;ll flesh out the <code>phone-detail.html</code> view template.</p>
 <p>The most important changes are listed below. You can see the full diff on <a href="https://github.com/angular/angular-phonecat/compare/step-7...step-8">GitHub</a>:</p>
-<h3>Data</h2>
+<h3 id="data">Data</h3>
 <p>In addition to <code>phones.json</code>, the <code>app/phones/</code> directory also contains one json file for each
 phone:</p>
 <p><strong><code>app/phones/nexus-s.json</code>:</strong> (sample snippet)
@@ -42,22 +42,23 @@ phone:</p>
 </pre>
 <p>Each of these files describes various properties of the phone using the same data structure. We&#39;ll
 show this data in the phone detail view.</p>
-<h2>Controller</h2>
+<h3 id="controller">Controller</h3>
 <p>We&#39;ll expand the <code>PhoneDetailCtrl</code> by using the <code>$http</code> service to fetch the json files. This works
 the same way as the phone list controller.</p>
 <p><strong><code>app/js/controllers.js</code>:</strong>
 <pre class="prettyprint linenums">
-function PhoneDetailCtrl($scope, $routeParams, $http) {
-  $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
-    $scope.phone = data;
-  });
-}
+var phonecatControllers = angular.module('phonecatControllers',[]);
 
-//PhoneDetailCtrl.$inject = ['$scope', '$routeParams', '$http'];
+phonecatControllers.controller('PhoneDetailCtrl', ['$scope', '$routeParams', '$http',
+  function($scope, $routeParams, $http) {
+    $http.get('phones/' + $routeParams.phoneId + '.json').success(function(data) {
+      $scope.phone = data;
+    });
+  }]);
 </pre>
 <p>To construct the URL for the HTTP request, we use <code>$routeParams.phoneId</code> extracted from the current
 route by the <code>$route</code> service.</p>
-<h2>Template</h2>
+<h3 id="template">Template</h3>
 <p>The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
 Note where we use the angular <code>{{expression}}</code> markup and <code>ngRepeat</code> to project phone data from
 our model into the view.</p>
@@ -95,7 +96,7 @@ TODO!
 <img  class="diagram" src="img/tutorial/tutorial_08-09_final.png">
 </div>
 
-<h2>Test</h3>
+<h3 id="test">Test</h3>
 <p>We wrote a new unit test that is similar to the one we wrote for the <code>PhoneListCtrl</code> controller in
 step 5.</p>
 <p><strong><code>test/unit/controllersSpec.js</code>:</strong>
@@ -110,7 +111,7 @@ step 5.</p>
 
       $routeParams.phoneId = 'xyz';
       scope = $rootScope.$new();
-      ctrl = $controller(PhoneDetailCtrl, {$scope: scope});
+      ctrl = $controller('PhoneDetailCtrl', {$scope: scope});
     }));
 
 
@@ -145,12 +146,12 @@ heading on the page is &quot;Nexus S&quot;.</p>
 </pre>
 <p>You can now rerun <code>./scripts/e2e-test.sh</code> or refresh the browser tab with the end-to-end test
 runner to see the tests run, or you can see them running on <a href="http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html">Angular&#39;s server</a>.</p>
-<h2>Experiments</h1>
+<h2 id="experiments">Experiments</h2>
 <ul>
 <li>Using the <a href="guide/dev_guide.e2e-testing">Angular&#39;s end-to-end test runner API</a>, write a test
 that verifies that we display 4 thumbnail images on the Nexus S details page.</li>
 </ul>
-<h1>Summary</h2>
+<h2 id="summary">Summary</h2>
 <p>Now that the phone details view is in place, proceed to <a href="tutorial/step_09">step 9</a> to learn how to
 write your own custom display filter.</p>
 <ul doc-tutorial-nav="8"></ul></div></div>
