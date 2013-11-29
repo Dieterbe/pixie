@@ -13,7 +13,8 @@ var photosApp = angular.module('photosApp', [
 photosApp.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-      when('/:dir', {
+      /* when('/:dir', { */
+      when('/', {
         templateUrl: 'partials/photos.html',
         controller: 'PhotosCtrl'
       }).
