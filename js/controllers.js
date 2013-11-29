@@ -35,6 +35,23 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             upper = $scope.photosAll.length;
         }
         $scope.photosView = $scope.photosAll.slice(lower, upper);
+        console.log("real length " + $scope.photosAll.length + ", FocusIndex " + $scope.focusIndex);
+        console.log("win subset lower " + lower + ", upper " + upper);
+        console.log("win  length " + $scope.photosView.length);
+        var str = "";
+        for (var i = 0; i < $scope.photosAll.length; i++) {
+            str += " " + $scope.photosAll[i].id;
+            if (i == $scope.focusIndex) {
+                str += "*";
+            }
+        }
+        console.log(str);
+        var str = "";
+        for (var i = 0; i < $scope.photosView.length; i++) {
+            str += " " + $scope.photosView[i].id;
+        }
+        console.log(str);
+        setInterval(function() {window.scrollTo(0, $("#photo-" + $scope.focusIndex).offsetTop)}, 100);
     }
     $scope.getCurrentPhoto = function() {
         var img = $scope.photosAll[$scope.focusIndex];
@@ -42,12 +59,14 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
             var idx = 0;
             for (var key in img.edits) {
                 idx++;
+                console.debug(key, idx);
                 if (idx == $scope.subFocusIndex) {
                     img = img.edits[key];
                     break;
                 }
             }
         }
+        console.debug("returning current photo, ", img);
         return img;
     };
     $scope.openRecord = function () {
@@ -86,7 +105,6 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
                 $scope.focusIndex++;
                 $scope.subFocusIndex = 0;
                 $scope.setPhotosView();
-                $scope.photosAll[$scope.focusIndex].foobar = 'true';
             }
         });
     }
