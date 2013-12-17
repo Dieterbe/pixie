@@ -39,19 +39,10 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
         console.log("win subset lower " + lower + ", upper " + upper);
         console.log("win  length " + $scope.photosView.length);
         var str = "";
-        for (var i = 0; i < $scope.photosAll.length; i++) {
-            str += " " + $scope.photosAll[i].id;
-            if (i == $scope.focusIndex) {
-                str += "*";
-            }
-        }
-        console.log(str);
-        var str = "";
         for (var i = 0; i < $scope.photosView.length; i++) {
             str += " " + $scope.photosView[i].id;
         }
         console.log(str);
-        setInterval(function() {window.scrollTo(0, $("#photo-" + $scope.focusIndex).offsetTop)}, 100);
     }
     $scope.getCurrentPhoto = function() {
         var img = $scope.photosAll[$scope.focusIndex];
