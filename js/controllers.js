@@ -125,13 +125,13 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
     }
     $scope.tag = function (tag) {
         $scope.$apply(function () {
-            var index = $scope.focusIndex; // not sure if needed, but by the time the callback fires we may have focused on other image
+            // not sure if needed, but by the time the callback fires we may have focused on other image
             var img = $scope.getCurrentPhoto();
             img.tag = tag;
             Photo.tag(img, function(response) {
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
                 if(response.msg != "tag already existed") {
-                    $scope.photosAll[index]['tags'].push(tag);
+                    img['tags'].push(tag);
                 }
             }, function(response) {
                 $scope.logs.push({msg: response.msg + ": "  + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
@@ -142,15 +142,15 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 
 
     $scope.unTag = function (tag) {
         $scope.$apply(function () {
-            var index = $scope.focusIndex; // not sure if needed, but by the time the callback fires we may have focused on other image
+            // not sure if needed, but by the time the callback fires we may have focused on other image
             var img = $scope.getCurrentPhoto();
             img.tag = tag;
             Photo.untag(img, function(response) {
                 console.debug(response);
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
-                var tag_index = $scope.photosAll[index]['tags'].indexOf(tag)
+                var tag_index = img['tags'].indexOf(tag)
                 if(tag_index!=-1){
-                       $scope.photosAll[index]['tags'].splice(tag_index, 1);
+                       img['tags'].splice(tag_index, 1);
                 }
             }, function(response) {
                 console.debug(response);
