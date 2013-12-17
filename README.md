@@ -54,9 +54,10 @@ that works on all posix file systems is very valuable (i.e. just directories, fi
 
 ## getting started 
 
-* create a tmsu database
+* create a tmsu database (`~/.tmsu/default.db` must exist)
 * store into a directory thumbnailed versions of the pictures in the source directories you want to load. 
   a great way to do this is using [gothum](https://github.com/Dieterbe/gothum)
+  thumbnails for new edits will be created by pixie, but thumbnails for existing pictures should exist in your thumbnail dir.
 * update config.ini to point to the db and thumbnail directory
 * configure keyboard shortcuts in partials/photos.html
 * `go run pixie.go`, load `http://localhost:8080` in browser, load a source dir and go for it
