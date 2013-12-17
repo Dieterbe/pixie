@@ -147,9 +147,9 @@ func find_edits_dir(dir string) (string, error) {
 	if !os.IsNotExist(err) {
 		return "", err
 	}
-	err = os.Mkdir(edits_dir, os.ModeDir)
+	err = os.MkdirAll(edits_dir, os.ModeDir)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "WARNING: Failed to create edits_dir '%s': %s\n", edits_dir, err)
+		fmt.Fprintf(os.Stderr, "WARNING: Failed to (recursively) create edits_dir '%s': %s\n", edits_dir, err)
 		return "", nil
 	}
 	return edits_dir, nil
