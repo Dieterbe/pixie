@@ -305,6 +305,7 @@ func serveThumb() http.Handler {
 	})
 }
 func main() {
+	fmt.Println("Starting...")
 	addr := ":8080"
 	config.Parse("config.ini")
 	conn_sqlite, err := sql.Open("sqlite3", *tmsu_file)
