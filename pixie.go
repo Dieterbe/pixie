@@ -2,6 +2,7 @@ package main
 
 import (
 	"./backend"
+	"./cp"
 	"crypto/md5"
 	"database/sql"
 	"encoding/json"
@@ -227,27 +228,47 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
 	}
-	err = exec.Command(*editor, path.Join(dir, name)).Run()
-	if err != nil {
-		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edit did not complete successfully: %s", err)}, 503)
-		return
-	}
-	ext := path.Ext(name)
-	filetags, err := backend.GetFileTags(dir, conn_sqlite)
-	if err != nil {
-		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
-		return
-	}
 	edits_dir, err := find_edits_dir(dir)
 	if err != nil {
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edits directory '%s' seems to exist but unable to read: %s", edits_dir, err)}, 503)
 		return
 	}
+	orig := path.Join(dir, name)
+	ext := path.Ext(name)
+	tmp := path.Join(edits_dir, name[:len(name)-len(ext)]+"-save-your-edit-to-a-new-file"+ext)
+	err = cp.Cp(tmp, orig)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Could not copy %s to %s because: %s", orig, tmp, err)}, 503)
+		return
+	}
+	// this doesn't actually help with preventing write. but I guess that doesn't really matter anyway.
+	// the filename speaks for itself.
+	err = os.Chmod(tmp, 0000)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Could not make %s unwriteable: %s", tmp, err)}, 503)
+		return
+	}
+	err = exec.Command(*editor, tmp).Run()
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edit did not complete successfully: %s", err)}, 503)
+		return
+	}
+	err = os.Remove(tmp)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Could not remove tmp file %s: %s", tmp, err)}, 503)
+		return
+	}
+
+	filetags, err := backend.GetFileTags(dir, conn_sqlite)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
+		return
+	}
 	edits_filetags := make(map[string]string)
 	if edits_dir != "" {
-		edits_filetags, err = backend.GetFileTags(dir, conn_sqlite)
+		edits_filetags, err = backend.GetFileTags(edits_dir, conn_sqlite)
 		if err != nil {
-			backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
+			backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", edits_dir, err)}, 503)
 			return
 		}
 	}

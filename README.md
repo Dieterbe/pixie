@@ -77,6 +77,13 @@ go run pixie.go
   by sorting and merging the image lists by time, you can more easily select the best ones.
 * a way to have "mirror directories", of files smaller than the originals, but bigger than thumbnails; so that export directories can
   point to those files.  (this also means that not every file should have be mirrored, only the ones which are used)
-* before making edit, copy file to somewhere. edit that and allow save, if saved and different, copy to edits dir
-if you open source file directly, you might accidentially overwrite it by saving it.
-but this means extra copying of data..
+
+
+## Creating edits
+
+use the keybind you defined to trigger the editor.
+pixie will create the edits dir (and any parent dirs) if needed, and copy the currently focused picture in there (so that you don't
+accidentially save changes to the original). Pixie makes the tmp file unwriteable, so after your changes, just use the 'save as'
+feature of your editor and save the image as `<original-name>-<description-of-edit>.<ext>` (e.g. `IMG_20131019_125436-cropped-and-sharpened.jpg`).  To abort, just exit the editor.
+Pixie will remove the tempfile and load the edit to the right of your original (there's keybinds to navigate left-right) and allow you to tag
+the picture just like any other.
