@@ -1,0 +1,4 @@
+/* prevent scrollbar, it doesn't work well with our photosAll slicing trick, rely only on keyboard nav instead */
+body {
+        overflow-y:hidden;
+}
