@@ -32,21 +32,15 @@ type Photo struct {
 	Dir   string            `json:"dir"`
 	Name  string            `json:"name"`
 	Ext   string            `json:"-"`
-	Thumb string            `json:"thumb"`
 	Tags  []string          `json:"tags"`
 	Edits map[string]*Photo `json:"edits"`
 }
 
 func (p *Photo) String() string {
-	return fmt.Sprintf("Photo {Id: %d, Dir: '%s', Name: '%s', Ext: '%s', Thumb: '%s', Tags: '%s'}", p.Id, p.Dir, p.Name, p.Ext, p.Thumb, p.Tags)
+	return fmt.Sprintf("Photo {Id: %d, Dir: '%s', Name: '%s', Ext: '%s', Tags: '%s'}", p.Id, p.Dir, p.Name, p.Ext, p.Tags)
 }
 
 func NewPhoto(id int, dir string, name string, ext string, filetags map[string]string, edits_dir string, edits_filetags map[string]string) (p *Photo, err error) {
-
-	// thumnail path
-	h := md5.New()
-	io.WriteString(h, fmt.Sprintf("file://%s", path.Join(dir, name)))
-	thumb := fmt.Sprintf("%x.png", h.Sum(nil))
 
 	// get our tags
 	var tags_slice []string
@@ -57,7 +51,7 @@ func NewPhoto(id int, dir string, name string, ext string, filetags map[string]s
 		tags_slice = make([]string, 0, 0)
 	}
 
-	p = &Photo{id, dir, name, ext, thumb, tags_slice, nil}
+	p = &Photo{id, dir, name, ext, tags_slice, nil}
 
 	if edits_dir != "" {
 		err = p.LoadEdits(edits_dir, edits_filetags)
@@ -262,12 +256,6 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 	if err != nil {
 		fmt.Printf("WARNING: failed to create Photo instance: %s\n", err)
 	}
-	for key, edit := range p.Edits {
-		err = workers.Resize("pixie-gothum", path.Join(edit.Dir, edit.Name), *thumbnail_dir)
-		if err != nil {
-			fmt.Printf("WARNING: failed to create thumbnail for edit '%s': %s\n", key, err)
-		}
-	}
 	enc := json.NewEncoder(w)
 	err = enc.Encode(p)
 	if err != nil {
@@ -275,6 +263,26 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 	}
 }
 
+func serveThumb() http.Handler {
+	h := http.FileServer(http.Dir(*thumbnail_dir))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		err := workers.Resize("pixie-gothum", r.URL.Path, *thumbnail_dir)
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+		} else {
+			fmt.Println(r.URL.Path)
+			// generate the thumb path again. we can optimize this later.
+			fileUri_in := fmt.Sprintf("file://%s", r.URL.Path)
+			hash := md5.New()
+			io.WriteString(hash, fileUri_in)
+			pathmd5 := fmt.Sprintf("%x", hash.Sum(nil))
+			path_out := pathmd5 + ".png"
+			r.URL.Path = path_out
+			fmt.Println(r.URL.Path)
+			h.ServeHTTP(w, r)
+		}
+	})
+}
 func main() {
 	addr := ":8080"
 	config.Parse("config.ini")
@@ -292,7 +300,7 @@ func main() {
 		api_edit_handler(w, r, conn_sqlite)
 	})
 
-	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails/", http.FileServer(http.Dir(*thumbnail_dir))))
+	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails", serveThumb()))
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
 	fmt.Printf("starting up on %s\n", addr)

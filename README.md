@@ -61,10 +61,9 @@ go run pixie.go
 ## getting started 
 
 * create a tmsu database (`~/.tmsu/default.db` must exist, you can do this by typing `tmsu files --all`)
-* store into a directory thumbnailed versions of the pictures in the source directories you want to load. 
-  a great way to do this is using [gothum](https://github.com/Dieterbe/gothum)
-  thumbnails for new edits will be created by pixie, but thumbnails for existing pictures should exist in your thumbnail dir.
-* update config.ini to point to the db and thumbnail directory
+* update config.ini to point to the db and thumbnail directories, and to use your preferred image editor for edits (optional).
+  Note that on Linux you probably already have a thumbnails dir from
+  various desktop apps, it's best to use the existing one, that way multiple apps (incl pixie) can work with the same thumbnails.
 * configure keyboard shortcuts in partials/photos.html
 * `go run pixie.go`, load `http://localhost:8080` in browser
 * Enter a directory (full path) that contains pictures.  If you want to use the edits feature,

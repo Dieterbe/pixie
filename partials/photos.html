@@ -59,7 +59,7 @@
                     <td style="border: 0px;" ng-class="{'active': (photo.id == focusIndex && 0 == subFocusIndex)}">
                       <h5>original</h5>
                       <div>
-                        <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.thumb}}"></a>
+                        <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{photo.dir}}/{{photo.name}}"></a>
                       </div>
                       <div>
                         <ul><li ng-repeat="tag in photo.tags" class="label label-info">{{tag}}</li></ul>
@@ -68,7 +68,7 @@
 
                     <td ng-repeat="(edit_key, edit) in photo.edits" style="border: 0px;" ng-class="{'active': (photo.id == focusIndex && $index + 1 == subFocusIndex)}">
                       <h5>{{edit_key}}</h5>
-                      <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{edit.thumb}}"></a>
+                      <a href="#/photos/{{photo.name}}" class="thumb"><img ng-src="/thumbnails/{{edit.dir}}/{{edit.name}}"></a>
                       <ul><li ng-repeat="tag in edit.tags" class="label label-info">{{tag}}</li></ul>
                     </td>
                   </tr>
