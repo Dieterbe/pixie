@@ -42,11 +42,21 @@ For 1 I use rsync, Pixie makes 2 and 3 as quick and easy as possible and [genera
 It is conceivable that with the advent of new technology some of these things may change, however a simple file layout
 that works on all posix file systems is very valuable (i.e. just directories, files and symlinks).
 
-## dependencies
 
-* tmsu tag database
-* golang (for building)
-* the gothum library, which uses graphicsmagick (to generate thumbnails for new edits)
+## Installation
+
+Install tmsu, Go (aka golang) and graphicsmagick (for gothum)
+Then:
+```
+export GOPATH=~/go
+go get github.com/stvp/go-toml-config
+go get github.com/mattn/go-sqlite3
+go get github.com/Dieterbe/gothum
+go get github.com/Dieterbe/pixie
+cd ~/go/src/github.com/Dieterbe/pixie
+go run pixie.go
+```
+
 
 ## getting started 
 
