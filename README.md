@@ -66,7 +66,11 @@ go run pixie.go
   thumbnails for new edits will be created by pixie, but thumbnails for existing pictures should exist in your thumbnail dir.
 * update config.ini to point to the db and thumbnail directory
 * configure keyboard shortcuts in partials/photos.html
-* `go run pixie.go`, load `http://localhost:8080` in browser, load a source dir and go for it
+* `go run pixie.go`, load `http://localhost:8080` in browser
+* Enter a directory (full path) that contains pictures.  If you want to use the edits feature,
+  then some parent of the path has to be 'originals'.
+  (e.g. if '/foo/bar/originals/john-import-from-camera' contains your pictures, then pixie
+  knows to put edits in '/foo/bar/edits/john-import-from-camera')
 
 ## TODO
 
