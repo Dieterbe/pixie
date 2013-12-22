@@ -8,23 +8,19 @@ Pixie: an opiniated photo management app for minimalists.
 * use script to generate export/album directories by finding all pictures matching certain criteria.
 
 
-Based on my ideals wrt photo storage and management, I came up with this tool (and related scripts).
-You may or may not agree with them.  Here we go..
-
-
 ## Photo storage & workflow ideology.
 
 I like plain simple directories of pictures. I like directories of pictures which I can upload to my albums online, or directories of pictures
-to stream to my TV (not necessarily the same ones, organised the same way, and not neccesarily the same resolution), and I want to keep a copy of pictures exactly the way they came from my devices (to that syncing is trivial).
-But I want minimal amount of manual hassle, and minimal redundancy.  I especially want no mess.
+to stream to my TV (not necessarily the same ones, organised the same way, and not neccesarily the same resolution), and I want to keep a copy of pictures exactly the way they came from my devices (so that syncing is trivial).
+But I want minimal amount of manual hassle, and minimal redundancy.  I especially want no filesystem mess.
 
 I want to have alternative versions of certain images, without polluting my "source" directories, and the ability to select which version
 of an image goes into which album(s).
 
 I want to be able to add metadata to pictures, but without modifying the pictures themselves, and in a simple, open format.
-Any picture should be able to appear in 0, 1 or more photo albums (or more generally "exported directories"), without copying files.
+Any picture should be able to appear in 0, 1 or more photo albums (or more generally "exported directories"), without moving or copying files.
 
-When composing albums, I want to filter down (i often make N pictures of the same thing), and select the best pictures from different devices,
+When composing albums, I want to filter down (i often make N pictures of the same thing), and select the best pictures, even across different devices (directories representing them),
 but without messing in the original files directory.
 
 I want software that makes this easier, but doesn't hide anything from me.
@@ -54,7 +50,7 @@ that works on all posix file systems is very valuable (i.e. just directories, fi
 
 ## getting started 
 
-* create a tmsu database (`~/.tmsu/default.db` must exist)
+* create a tmsu database (`~/.tmsu/default.db` must exist, you can do this by typing `tmsu files --all`)
 * store into a directory thumbnailed versions of the pictures in the source directories you want to load. 
   a great way to do this is using [gothum](https://github.com/Dieterbe/gothum)
   thumbnails for new edits will be created by pixie, but thumbnails for existing pictures should exist in your thumbnail dir.
