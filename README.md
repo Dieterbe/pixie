@@ -7,6 +7,8 @@ Pixie: an opiniated photo management app for minimalists.
 * easily create edits of pictures, and optionally tag them the same way.
 * use script to generate export/album directories by finding all pictures matching certain criteria.
 
+![Screenshot](https://raw.github.com/Dieterbe/pixie/master/screenshot.png)
+
 
 ## Photo storage & workflow ideology.
 
