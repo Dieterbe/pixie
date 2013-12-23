@@ -27,6 +27,7 @@ import (
 var thumbnail_dir = config.String("thumbnail_dir", "")
 var tmsu_file = config.String("tmsu_file", "")
 var editor = config.String("editor", "gimp")
+var addr = config.String("addr", "localhost:8080")
 
 type Photo struct {
 	Id    int               `json:"id"`
@@ -306,7 +307,6 @@ func serveThumb() http.Handler {
 }
 func main() {
 	fmt.Println("Starting...")
-	addr := ":8080"
 	config.Parse("config.ini")
 	conn_sqlite, err := sql.Open("sqlite3", *tmsu_file)
 	if err != nil {
@@ -325,6 +325,6 @@ func main() {
 	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails", serveThumb()))
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
-	fmt.Printf("starting up on %s\n", addr)
-	log.Fatal(http.ListenAndServe(addr, nil))
+	fmt.Printf("starting up on %s\n", *addr)
+	log.Fatal(http.ListenAndServe(*addr, nil))
 }
