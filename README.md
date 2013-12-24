@@ -56,20 +56,21 @@ go get github.com/mattn/go-sqlite3
 go get github.com/Dieterbe/gothum
 go get github.com/Dieterbe/pixie
 cd ~/go/src/github.com/Dieterbe/pixie
-go run pixie.go
 ```
 
 
 ## getting started 
 
 * create a tmsu database (`~/.tmsu/default.db` must exist, you can do this by typing `tmsu files --all`)
+* go into the pixie directory
 * update config.ini to point to the db and thumbnail directories, and to use your preferred image editor for edits (optional).
   Note that on Linux you probably already have a thumbnails dir from
   various desktop apps, it's best to use the existing one, that way multiple apps (incl pixie) can work with the same thumbnails.
 * configure keyboard shortcuts in partials/photos.html
-* `go run pixie.go`, load `http://localhost:8080` in browser
-* Enter a directory (full path) that contains pictures.  If you want to use the edits feature,
-  then some parent of the path has to be 'originals'.
+* type `go run pixie.go`
+* load `http://localhost:8080` in browser
+* Enter a directory (full path) that contains pictures.  You can now start navigating and tagging as per your keybinds.
+* If you want to use the edits feature, then some parent of the path has to be 'originals'.
   (e.g. if '/foo/bar/originals/john-import-from-camera' contains your pictures, then pixie
   knows to put edits in '/foo/bar/edits/john-import-from-camera')
 
