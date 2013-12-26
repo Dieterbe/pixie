@@ -18,16 +18,20 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/user"
 	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
 
-var thumbnail_dir = config.String("thumbnail_dir", "")
-var tmsu_file = config.String("tmsu_file", "")
-var editor = config.String("editor", "gimp")
-var addr = config.String("addr", "localhost:8080")
+var ptr_thumbnail_dir = config.String("thumbnail_dir", "")
+var ptr_exports_dir = config.String("exports_dir", "") // only used by export script, but go-toml-config insists on declaring all vars
+var ptr_tmsu_file = config.String("tmsu_file", "")
+var ptr_editor = config.String("editor", "gimp")
+var ptr_addr = config.String("addr", "localhost:8080")
+
+var thumbnail_dir, tmsu_file, editor, addr string
 
 type Photo struct {
 	Id    int               `json:"id"`
@@ -36,6 +40,17 @@ type Photo struct {
 	Ext   string            `json:"-"`
 	Tags  []string          `json:"tags"`
 	Edits map[string]*Photo `json:"edits"`
+}
+
+func Expand(in string) (out string) {
+	if strings.HasPrefix(in, "~/") {
+		usr, _ := user.Current()
+		home_dir := usr.HomeDir
+		out := strings.Replace(in, "~/", home_dir+"/", 1)
+		fmt.Println(out)
+		return out
+	}
+	return in
 }
 
 func (p *Photo) String() string {
@@ -249,7 +264,7 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Could not make %s unwriteable: %s", tmp, err)}, 503)
 		return
 	}
-	err = exec.Command(*editor, tmp).Run()
+	err = exec.Command(editor, tmp).Run()
 	if err != nil {
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edit did not complete successfully: %s", err)}, 503)
 		return
@@ -286,9 +301,9 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 }
 
 func serveThumb() http.Handler {
-	h := http.FileServer(http.Dir(*thumbnail_dir))
+	h := http.FileServer(http.Dir(thumbnail_dir))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		err := workers.Resize("pixie-gothum", r.URL.Path, *thumbnail_dir)
+		err := workers.Resize("pixie-gothum", r.URL.Path, thumbnail_dir)
 		if err != nil {
 			http.Error(w, err.Error(), 500)
 		} else {
@@ -307,8 +322,15 @@ func serveThumb() http.Handler {
 }
 func main() {
 	fmt.Println("Starting...")
-	config.Parse("config.ini")
-	conn_sqlite, err := sql.Open("sqlite3", *tmsu_file)
+	err := config.Parse(Expand("~/.pixie/config.ini"))
+	if err != nil {
+		log.Fatal("could not load config '~/.pixie/config.ini': " + err.Error() + " (did you set up as per the README?)")
+	}
+	thumbnail_dir = Expand(*ptr_thumbnail_dir)
+	tmsu_file = Expand(*ptr_tmsu_file)
+	addr = *ptr_addr
+	editor = *ptr_editor
+	conn_sqlite, err := sql.Open("sqlite3", tmsu_file)
 	if err != nil {
 		log.Fatal("could not open database: ", err.Error())
 	}
@@ -325,6 +347,6 @@ func main() {
 	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails", serveThumb()))
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
-	fmt.Printf("starting up on %s\n", *addr)
-	log.Fatal(http.ListenAndServe(*addr, nil))
+	fmt.Printf("starting up on %s\n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
 }

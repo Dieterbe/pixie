@@ -63,7 +63,8 @@ cd ~/go/src/github.com/Dieterbe/pixie
 
 * create a tmsu database (`~/.tmsu/default.db` must exist, you can do this by typing `tmsu files --all`)
 * go into the pixie directory
-* update config.ini to point to the db and thumbnail directories, and to use your preferred image editor for edits (optional).
+* copy the template config directory to `~/.pixie`
+* update `~/.pixie/config.ini` to point to the db and thumbnail directories, and to use your preferred image editor for edits (optional).
   Note that on Linux you probably already have a thumbnails dir from
   various desktop apps, it's best to use the existing one, that way multiple apps (incl pixie) can work with the same thumbnails.
 * configure keyboard shortcuts in partials/photos.html
@@ -74,13 +75,6 @@ cd ~/go/src/github.com/Dieterbe/pixie
   (e.g. if '/foo/bar/originals/john-import-from-camera' contains your pictures, then pixie
   knows to put edits in '/foo/bar/edits/john-import-from-camera')
 
-## TODO
-
-* using multiple directories in the UI at the same time (e.g. if you have pics of the same thing taken with different camera's),
-  by sorting and merging the image lists by time, you can more easily select the best ones.
-* a way to have "mirror directories", of files smaller than the originals, but bigger than thumbnails; so that export directories can
-  point to those files.  (this also means that not every file should have be mirrored, only the ones which are used)
-
 
 ## Creating edits
 
@@ -90,3 +84,29 @@ accidentially save changes to the original). Pixie makes the tmp file unwriteabl
 feature of your editor and save the image as `<original-name>-<description-of-edit>.<ext>` (e.g. `IMG_20131019_125436-cropped-and-sharpened.jpg`).  To abort, just exit the editor.
 Pixie will remove the tempfile and load the edit to the right of your original (there's keybinds to navigate left-right) and allow you to tag
 the picture just like any other.
+
+
+## Exporting
+
+The whole point is that after creating edits and tagging files (originals and/or edits), you'll want to create export directories
+of files matching certain criteria, so that you can then use those export directories to upload to a video sharing site, and stuff like that.
+
+First, make sure `exports_dir` is set correctly in your config.ini,
+In `~/.pixie/exports/` you can put config files, one per set of files to export.
+They only have to contain something like:
+```
+title='title of the album (human friendly)
+match='tmsu tags to match'
+```
+
+Then run
+Note that this script requires bash, tmsu, exiv2, and python2
+
+
+
+## TODO
+
+* using multiple directories in the UI at the same time (e.g. if you have pics of the same thing taken with different camera's),
+  by sorting and merging the image lists by time, you can more easily select the best ones.
+* a way to have "mirror directories", of files smaller than the originals, but bigger than thumbnails; so that export directories can
+  point to those files.  (this also means that not every file should have be mirrored, only the ones which are used)
