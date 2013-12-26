@@ -1,5 +1,5 @@
 #!/bin/bash
-# generate albums in a very cheap (symlinks) and
+# generate sets (albums) in a very cheap (symlinks) and
 # deterministic/idempotent way (so that you can throw them away if you want to),
 # based on tmsu tags.
 
