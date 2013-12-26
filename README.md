@@ -99,14 +99,6 @@ title='title of the album (human friendly)
 match='tmsu tags to match'
 ```
 
-Then run
+Then run `export/generate_sets.sh`
 Note that this script requires bash, tmsu, exiv2, and python2
 
-
-
-## TODO
-
-* using multiple directories in the UI at the same time (e.g. if you have pics of the same thing taken with different camera's),
-  by sorting and merging the image lists by time, you can more easily select the best ones.
-* a way to have "mirror directories", of files smaller than the originals, but bigger than thumbnails; so that export directories can
-  point to those files.  (this also means that not every file should have be mirrored, only the ones which are used)
