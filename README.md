@@ -67,7 +67,7 @@ cd ~/go/src/github.com/Dieterbe/pixie
 * update `~/.pixie/config.ini` to point to the db and thumbnail directories, and to use your preferred image editor for edits (optional).
   Note that on Linux you probably already have a thumbnails dir from
   various desktop apps, it's best to use the existing one, that way multiple apps (incl pixie) can work with the same thumbnails.
-* configure keyboard shortcuts in partials/photos.html
+* configure keyboard shortcuts in `~/.pixie/binds`. Basically you'll want to add tag/untag pairs for the tags you will use.  Make sure this file  stays valid json because there's no validation yet.
 * type `go run pixie.go`
 * load `http://localhost:8080` in browser
 * Enter a directory (full path) that contains pictures.  You can now start navigating and tagging as per your keybinds.

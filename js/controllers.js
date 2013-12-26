@@ -4,8 +4,24 @@
 
 var photosControllers = angular.module('photosControllers', []);
 
-photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Photos', 'Photo', 'Edit', '$timeout',
-  function($scope, $routeParams, Photos, Photo, Edit, $timeout) {
+photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', 'Photos', 'Photo', 'Edit', '$timeout',
+  function($scope, $routeParams, Binds, Photos, Photo, Edit, $timeout) {
+    Binds.list(
+        function(response) {
+            // TODO: json validation!
+            //console.debug(response);
+            $.map(response, function (v, k) {
+                // ignore object built-ins, we only want the actual json key-values
+                if (typeof(v) == "string") {
+                    // later we may want to do this properly will apply() or smth
+                    Mousetrap.bind(k, function (){ eval("$scope." + v); });
+                }
+            });
+            $scope.logs.push({msg: "keybinds loaded", type: 'info'});
+        }, function(response) {
+            console.debug(response);
+            $scope.logs.push({msg: "could not load keybinds", type: 'error'});
+        });
 
     // routeParams.dir
     $scope.focusIndex = 0; // determines position top-bottom

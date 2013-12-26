@@ -1,0 +1,18 @@
+{
+    "h": "moveLeft()",
+    "j": "moveDown()",
+    "k": "moveUp()",
+    "l": "moveRight()",
+    "g g": "moveHome()",
+    "G": "moveEnd()",
+
+    "o": "openRecord()",
+    "e": "newEdit()",
+
+    "a": "tag('album-fb')",
+    "d a": "unTag('album-fb')",
+    "t": "tag('test')",
+    "d t": "unTag('test')",
+
+    "T": "autotag('test')"
+}

@@ -343,6 +343,7 @@ func main() {
 	http.HandleFunc("/api/edit", func(w http.ResponseWriter, r *http.Request) {
 		api_edit_handler(w, r, conn_sqlite)
 	})
+	http.Handle("/api/config/binds", http.StripPrefix("/api/config", http.FileServer(http.Dir(Expand("~/.pixie")))))
 
 	http.Handle("/thumbnails/", http.StripPrefix("/thumbnails", serveThumb()))
 	http.Handle("/", http.FileServer(http.Dir(".")))

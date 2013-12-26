@@ -2,6 +2,13 @@
 
 var photosServices = angular.module('photosServices', ['ngResource']);
 
+photosServices.factory('Binds', ['$resource',
+  function($resource){
+    return $resource('/api/config/binds', {}, {
+        list: { method:'GET', isArray: false}}
+    );
+  }
+]);
 photosServices.factory('Photos', ['$resource',
   function($resource){
     return $resource('/api/photos/:directory', {}, {
