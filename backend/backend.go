@@ -145,7 +145,7 @@ func UnTag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname st
 		return
 	}
 	if ra == 0 {
-		ErrorJson(w, Resp{"Binding non-existent. Nothing to remove"}, 503)
+		ErrorJson(w, Resp{"No tag relationship. Nothing to remove"}, 503)
 		return
 	}
 
