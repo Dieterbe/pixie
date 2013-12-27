@@ -47,7 +47,6 @@ func Expand(in string) (out string) {
 		usr, _ := user.Current()
 		home_dir := usr.HomeDir
 		out := strings.Replace(in, "~/", home_dir+"/", 1)
-		fmt.Println(out)
 		return out
 	}
 	return in
@@ -240,6 +239,7 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 	}
 	dir := r.Form.Get("dir")
 	name := r.Form.Get("name")
+	start_from := r.Form.Get("start_from")
 	if dir == "" || name == "" {
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Invalid request: %s", err)}, 503)
 		return
@@ -253,12 +253,20 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("dir is not in a format that supports an edits dir")}, 409)
 		return
 	}
-	orig := path.Join(dir, name)
-	ext := path.Ext(name)
-	tmp := path.Join(edits_dir, name[:len(name)-len(ext)]+"-save-your-edit-to-a-new-file"+ext)
-	err = cp.Cp(tmp, orig)
+
+	var start_from_name string
+	if start_from != "" {
+		start_from_name = path.Base(start_from)
+	} else {
+		start_from = path.Join(dir, name)
+		start_from_name = name
+	}
+	start_from_ext := path.Ext(start_from_name)
+	tmp := path.Join(edits_dir, start_from_name[:len(start_from_name)-len(start_from_ext)]+"-save-your-edit-to-a-new-file"+start_from_ext)
+
+	err = cp.Cp(tmp, start_from)
 	if err != nil {
-		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Could not copy %s to %s because: %s", orig, tmp, err)}, 503)
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Could not copy %s to %s because: %s", start_from, tmp, err)}, 503)
 		return
 	}
 	// this doesn't actually help with preventing write. but I guess that doesn't really matter anyway.
@@ -284,16 +292,13 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", dir, err)}, 503)
 		return
 	}
-	edits_filetags := make(map[string]string)
-	if edits_dir != "" {
-		edits_filetags, err = backend.GetFileTags(edits_dir, conn_sqlite)
-		if err != nil {
-			backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", edits_dir, err)}, 503)
-			return
-		}
+	edits_filetags, err := backend.GetFileTags(edits_dir, conn_sqlite)
+	if err != nil {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Cannot get file tags: '%s': %s", edits_dir, err)}, 503)
+		return
 	}
 
-	p, err := NewPhoto(id, dir, name, ext, filetags, edits_dir, edits_filetags)
+	p, err := NewPhoto(id, dir, name, path.Ext(name), filetags, edits_dir, edits_filetags)
 	if err != nil {
 		fmt.Printf("WARNING: failed to create Photo instance: %s\n", err)
 	}

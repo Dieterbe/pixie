@@ -83,9 +83,20 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
     };
     $scope.newEdit = function () {
         $scope.$apply(function () {
-            console.log('creating edit for :', $scope.photosAll[$scope.focusIndex] );
-            $scope.photosAll[$scope.focusIndex] = Edit.new($scope.photosAll[$scope.focusIndex], function(response) {
-                $scope.logs.push({msg: "created new edit for " + $scope.photosAll[$scope.focusIndex].name, type: 'info'});
+            var img = $scope.photosAll[$scope.focusIndex];
+            var edits_pre = Object.keys(img['edits']).length;
+            if ($scope.subFocusIndex > 0 ) {
+                var cur = $scope.getCurrentPhoto();
+                img['start_from'] = cur['dir'] + "/" + cur['name'];
+            } else {
+                img['start_from'] = "";
+            }
+            $scope.photosAll[$scope.focusIndex] = Edit.new(img, function(response) {
+                var edits_post = Object.keys($scope.photosAll[$scope.focusIndex]['edits']).length;
+                $scope.logs.push({
+                    msg: "created " + (edits_post - edits_pre) + " new edits for " + $scope.photosAll[$scope.focusIndex].name,
+                    type: 'info'
+                });
             }, function(response) {
                 $scope.logs.push({msg: "failed to edit " + $scope.photosAll[$scope.focusIndex].name + ": " + response.data.msg, type: 'error'});
             });

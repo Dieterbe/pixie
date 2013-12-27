@@ -27,7 +27,7 @@ photosServices.factory('Photo', ['$resource',
 photosServices.factory('Edit', ['$resource',
   function($resource){
     return $resource('/api/edit', {}, {
-        new: { method:'POST', params:{id: "@id", dir:"@dir", name:"@name"}, isArray: false},
+        new: { method:'POST', params:{id: "@id", dir:"@dir", name:"@name", start_from: "@start_from"}, isArray: false},
     });
   }
 ]);
