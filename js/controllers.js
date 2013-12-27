@@ -146,7 +146,8 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
             img.tag = tag;
             Photo.tag(img, function(response) {
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
-                if(response.msg != "tag already existed") {
+                // only add it if we didn't have it already
+                if (img['tags'].indexOf(tag) == -1) {
                     img['tags'].push(tag);
                 }
             }, function(response) {
@@ -162,14 +163,12 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
             var img = $scope.getCurrentPhoto();
             img.tag = tag;
             Photo.untag(img, function(response) {
-                console.debug(response);
                 $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'info'});
                 var tag_index = img['tags'].indexOf(tag)
                 if(tag_index!=-1){
                        img['tags'].splice(tag_index, 1);
                 }
             }, function(response) {
-                console.debug(response);
                 $scope.logs.push({msg: response.data.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
             $scope.setPhotosView();
