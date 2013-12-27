@@ -249,6 +249,10 @@ func api_edit_handler(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.D
 		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("Edits directory '%s' seems to exist but unable to read: %s", edits_dir, err)}, 503)
 		return
 	}
+	if edits_dir == "" {
+		backend.ErrorJson(w, backend.Resp{fmt.Sprintf("dir is not in a format that supports an edits dir")}, 409)
+		return
+	}
 	orig := path.Join(dir, name)
 	ext := path.Ext(name)
 	tmp := path.Join(edits_dir, name[:len(name)-len(ext)]+"-save-your-edit-to-a-new-file"+ext)
