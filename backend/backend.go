@@ -1,12 +1,14 @@
 package backend
 
 import (
+	"bitbucket.org/oniony/tmsu/src/tmsu/fingerprint"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"net/http"
+	"os"
 	"path"
 )
 
@@ -47,9 +49,19 @@ func get_fileid(conn_sqlite *sql.DB, fname string) (file_id int, err error) {
 		fmt.Println("")
 	}
 	if file_id == -1 {
-		// i don't really use the fingerprint and mod_time, that's more of a tmsu thing.
-		query = `insert into file (directory, name, fingerprint, mod_time) values (?, ?, 'pixie', '2013-01-01')`
-		result, err := conn_sqlite.Exec(query, dirname, basename)
+		stat, err := os.Stat(fname)
+		if err != nil {
+			return -1, errors.New(fmt.Sprintf("Cannot stat file '%s': %s", fname, err))
+		}
+		fingerprint, err := fingerprint.Create(fname)
+		if err != nil {
+			return -1, errors.New(fmt.Sprintf("Cannot create fingerprint for file '%s': %s", fname, err))
+		}
+		modTime := stat.ModTime()
+		size := uint(stat.Size())
+
+		query = `insert into file (directory, name, fingerprint, mod_time, size, is_dir) values (?, ?, ?, ?, ?, 0)`
+		result, err := conn_sqlite.Exec(query, dirname, basename, string(fingerprint), modTime, size)
 		if err != nil {
 			return -1, errors.New(fmt.Sprintf("Cannot insert file '%s' into sqlite: %s", fname, err))
 		}
@@ -101,27 +113,13 @@ func Tag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname stri
 		ErrorJson(w, Resp{err.Error()}, 503)
 		return
 	}
-	// also this is a little racey because tmsu doesn't use a constraint
-	var file_tag_id int
-	query := `select id from file_tag where file_id = ? and tag_id = ?`
-	err = conn_sqlite.QueryRow(query, file_id, tag_id).Scan(&file_tag_id)
-	switch {
-	case err == sql.ErrNoRows:
-		file_tag_id = -1
-	case err != nil:
-		ErrorJson(w, Resp{fmt.Sprintf("Cannot query for any pre-existing mapping: %s", err)}, 503)
-		return
-	default:
-		Json(w, Resp{"tag already existed"})
-		return
-	}
-	query = `insert into file_tag (file_id, tag_id) values (?, ?)`
+	query := `replace into file_tag (file_id, tag_id) values (?, ?)`
 	_, err = conn_sqlite.Exec(query, file_id, tag_id)
 	if err != nil {
 		ErrorJson(w, Resp{fmt.Sprintf("Cannot create tag mapping: %s", err)}, 503)
 		return
 	}
-	Json(w, Resp{"tag saved"})
+	Json(w, Resp{"tag saved (or already existed)"})
 }
 
 func UnTag(w http.ResponseWriter, r *http.Request, conn_sqlite *sql.DB, fname string, tag string) {
