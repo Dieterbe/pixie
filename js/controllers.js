@@ -36,7 +36,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
             $scope.logs.push({msg: "loaded " + $scope.directory, type: 'info'});
             $scope.setPhotosView();
         }, function(response) {
-            $scope.logs.push({msg: "failed to load " + $scope.directory, type: 'error'});
+            $scope.logs.push({msg: "failed to load " + $scope.directory + ": " + response.data.msg, type: 'error'});
             $scope.photosAll = [];
             $scope.setPhotosView();
         });
@@ -87,7 +87,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
             $scope.photosAll[$scope.focusIndex] = Edit.new($scope.photosAll[$scope.focusIndex], function(response) {
                 $scope.logs.push({msg: "created new edit for " + $scope.photosAll[$scope.focusIndex].name, type: 'info'});
             }, function(response) {
-                $scope.logs.push({msg: "failed to edit " + $scope.photosAll[$scope.focusIndex].name, type: 'error'});
+                $scope.logs.push({msg: "failed to edit " + $scope.photosAll[$scope.focusIndex].name + ": " + response.data.msg, type: 'error'});
             });
             $scope.setPhotosView();
         });
@@ -150,7 +150,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
                     img['tags'].push(tag);
                 }
             }, function(response) {
-                $scope.logs.push({msg: response.msg + ": "  + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
+                $scope.logs.push({msg: response.data.msg + ": "  + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
             $scope.setPhotosView();
         });
@@ -170,7 +170,7 @@ photosControllers.controller('PhotosCtrl', ['$scope', '$routeParams', 'Binds', '
                 }
             }, function(response) {
                 console.debug(response);
-                $scope.logs.push({msg: response.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
+                $scope.logs.push({msg: response.data.msg + ": " + img.dir + "/" + img.name + " (" + tag + ")", type: 'error'});
             });
             $scope.setPhotosView();
         });
