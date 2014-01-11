@@ -13,7 +13,7 @@ filename () {
     local file=$1
     local file_base="$(basename "$file")"
     # the tail is needed, because in some rare cases it returns more than 1 date, i know of one example:
-    # fotos/originals/dieter-s3/extSdCard_DCIM/Camera/20121228_142756-1.jpg
+    # nas-direct/fotos/originals/dieter-s3/DCIM-Camera/20121228_142756-1.jpg
     # and in that case it seems the 2nd date is most appropriate.
     local fname=$(exiv2 -g Exif.Image.DateTime -P v "$file" | tail -n 1 | tr ' ' '_')_"$file_base"
     echo "$fname"
