@@ -169,7 +169,7 @@ func find_edits_dir(dir string) (string, error) {
 func IsPhoto(f os.FileInfo) (isPhoto bool, name string, ext string) {
 	name = f.Name()
 	ext = filepath.Ext(name)
-	isPhoto = strings.HasPrefix(mime.TypeByExtension(ext), "image/")
+	isPhoto = strings.HasPrefix(mime.TypeByExtension(strings.ToLower(ext)), "image/")
 	return
 }
 
