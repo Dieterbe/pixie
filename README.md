@@ -1,5 +1,7 @@
 Pixie: an opiniated photo management app for minimalists.
 
+DEPRECATED in favor of [Darktable](http://dieter.plaetinck.be/darktable_magnificent_photo_manager_editor.html)
+
 ## In a nutshell
 
 * small app that you run locally, it loads pictures from given directories
